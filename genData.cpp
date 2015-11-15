@@ -42,23 +42,18 @@ Polygon randSearchBox(double side) {
 int main(int argc, char** argv) {
 	
 	vector<Polygon> poly_list;
-	// int n = 1000000;
-	int n_insert = 200000;
+	int n_insert = 10000000;
+	int n_step = 200000;
+	int num_query = n_insert / n_step;
 
-	
+	string filename = "load.sql";
+	ofstream fs(filename);
+	fs << "DROP TABLE gis;\n";
+	fs << "CREATE TABLE gis (g GEOMETRY NOT NULL, color VARCHAR(12) ) ENGINE=MyISAM;\n";
 
-	// fs << "(PolygonFromText('POLYGON((10 10, 20 10, 20 20, 10 20, 10 10))'))";
-	// fs << ",\n";
-	// fs << "(PolygonFromText('POLYGON((0 0, 30 0, 30 5, 0 5, 0 0))'))";
-	// fs << ";";
-
-	for (int k = 0; k < 5; k++) {
-		string filename = "load" + to_string(k) + ".sql";
-		ofstream fs(filename);
-		// fs << "DROP TABLE gis;\n";
-		// fs << "CREATE TABLE gis (g GEOMETRY NOT NULL, color VARCHAR(12), SPATIAL INDEX(g)) ENGINE=MyISAM;\n";
+	for (int k = 0; k < num_query; k++) {
 		fs << "INSERT INTO gis VALUES\n";
-		for (int i = 0; i < n_insert; i++) {
+		for (int i = 0; i < n_step; i++) {
 			Polygon p = randPolygon();
 			fs << "(PolygonFromText('POLYGON((";
 			for (int j = 0; j < 3; j++) {
@@ -72,13 +67,14 @@ int main(int argc, char** argv) {
 			else {
 				fs << "'blue')";
 			}
-			if (i != n_insert-1) {
+			if (i != n_step-1) {
 				fs << ",\n";
 			}
 		}
-		fs << ";";
-		fs.close();
+		fs << ";\n";
 	}
+	fs.close();
+
 	int n_search = 100;
 	ofstream fs1("search.sql");
 	for (int i = 0; i < n_search; i++) {
@@ -92,15 +88,5 @@ int main(int argc, char** argv) {
 		fs1 << "color='red';\n";
 	}
 
-
-	// select count(*) from gis where ST_CONTAINS(PolygonFromText('polygon((0 0, 100000 0, 100000 100000, 0 100000, 0 0))'), g);
-
-
-
-	// Polygon a = randPolygon();
-	// for (int i = 0; i < a.size(); i++) {
-	// 	cout << a[i].first << endl;
-	// 	cout << a[i].second << endl;
-	// }
 	return 0;
 }
