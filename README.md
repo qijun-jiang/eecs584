@@ -14,13 +14,7 @@ source /home/zhizhong/Desktop/eecs584/eecs584/load.sql
 create index:
 ALTER TABLE gis ADD SPATIAL INDEX(g);
 
-
-
-
-
-
-server-client:
-
+# server-client:
 -mini spatialdb client: client is only in charge of reading queries from file, and send it to server one by one, also receive result. 
 -sql client: TBD
 
@@ -30,6 +24,8 @@ server-client:
                  2. spatial query only(),
                  
                  
-                 
+
+#Rtree implementation
+-serial implementation: https://github.com/nushoin/RTree
 -execution mode: 1.parallel check 2nd attribute in the tree search process.
                  2.store all row id into a data structure and sort afterwards, parallelize scan process again. 
