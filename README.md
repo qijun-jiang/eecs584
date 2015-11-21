@@ -27,5 +27,6 @@ ALTER TABLE gis ADD SPATIAL INDEX(g);
 
 #Rtree implementation
 -serial implementation: https://github.com/nushoin/RTree
+
 -execution mode: 1.parallel check 2nd attribute in the tree search process.
                  2.store all row id into a data structure and sort afterwards, parallelize scan process again. 
