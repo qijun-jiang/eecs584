@@ -28,3 +28,8 @@ server-client:
 
 -mini spatialDB: 1. two attribute query(parallelize), 
                  2. spatial query only(),
+                 
+                 
+                 
+-execution mode: 1.parallel check 2nd attribute in the tree search process.
+                 2.store all row id into a data structure and sort afterwards, parallelize scan process again. 
