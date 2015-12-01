@@ -18,9 +18,13 @@ ALTER TABLE gis ADD SPATIAL INDEX(g);
 -client:
 
 -server:
+
 data structure: table(consists of (1)array of rows and (2) rtree index) (3) string map
+
 row contains(rectangle and attribute)
+
 rtree index
+
 string map maps string to double
 
 -parser: 
@@ -41,9 +45,13 @@ attribute(as double)
 compare operator
 
 -executor:
+
 depend on query type:
+
 drop table, create table, just change the table list,
+
 insert: just insert the rectangle
+
 query:	
 1. based on spatial function and compare operator, pass two function pointer to rtree class, and collect result.
 
