@@ -42,8 +42,8 @@ Polygon randSearchBox(double side) {
 int main(int argc, char** argv) {
 	
 	vector<Polygon> poly_list;
-	int n_insert = 100000;
-	int n_step = 20000;
+	int n_insert = 3000000;
+	int n_step = 200000;
 	int num_query = n_insert / n_step;
 
 	string filename = "load1.sql";
