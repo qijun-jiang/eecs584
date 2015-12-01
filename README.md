@@ -25,12 +25,19 @@ string map maps string to double
 
 -parser: 
 parse the 5 queries(drop table, create table, insert, delete, select)
+
 return a struct
+
 query type
+
 table name
+
 rectangle
+
 spatial function(intersect/ contain)
+
 attribute(as double)
+
 compare operator
 
 -executor:
