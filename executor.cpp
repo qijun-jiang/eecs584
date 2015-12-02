@@ -42,6 +42,7 @@ int Executor::execute(string query_string){
         void *void_table_name = static_cast<void*>(&table_name);
         int nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.min, MySearchCallback, void_table_name);
         cout << "Search resulted in " << nhits << " hits\n";
+        return nhits;
     }
 
     if (parsed_query.query_type == "drop table"){
