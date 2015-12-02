@@ -10,7 +10,7 @@ int Executor::execute(string query_string){
 // drop table
     ParserResult parsed_query = query_parser_.Parse(query_string);
     string table_name = parsed_query.table_name;
-    if (table_map.find() == table_map.end()){
+    if (table_map.find(table_name) == table_map.end()){
         table_map[table_name] = new TableData(table_name);
     }
     const TableData& tb_data = *(table_map[table_name]);
