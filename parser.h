@@ -23,9 +23,7 @@ struct ParserResult {
 	Rect rect;
 	char spatial_type;
 	char cmp_op;
-	bool is_double;
 	double attr_value;
-	string attr_string;
 
 	ParserResult() {}
 };

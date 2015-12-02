@@ -31,7 +31,9 @@ ParserResult Parser::Parse(string query) {
 	}
 	else if (type == "insert") {
 		result.table_name = s_list[2];
-		
+		s_list[6].erase(s_list[6].end()-1);
+		s_list[10].erase(s_list[10].end()-1);
+		result.rect = Rect(stod(s_list[5]), stod(s_list[6]), stod(s_list[9]), stod(s_list[10]));
 	}
 	// 	case DROP: {
 	// 		drop_table(s_list[1]);
@@ -90,7 +92,7 @@ int main() {
 
     string table_name = "gis";
     TableData* tb_data;
-    if (table_map.find() == table_map.end()){
+    if (table_map.find(table_name) == table_map.end()){
         table_map[table_name] = new TableData(table_name);
     }
     tb_data = table_map[table_name];
@@ -104,7 +106,8 @@ int main() {
 
 	Parser parser;
 
-	parser.Parse("INSERT INTO gis1 VALUES (PolygonFromText('POLYGON(( 45800.8 12860.7, 45845.4 12860.7, 45845.4 12905.4, 45800.8 12860.7 ))'), 'red');");
+
+	parser.Parse("INSERT INTO gis1 VALUES (PolygonFromText('POLYGON(( 89031.9 55459.7, 89147.3 55459.7, 89147.3 55575.1, 89031.9 55575.1, 89031.9 55459.7 ))'), 'blue');");
 
 
 	// parser("CREATE TABLE gis1 (g GEOMETRY NOT NULL, color VARCHAR(12), SPATIAL INDEX(g)) ENGINE=MyISAM;");
