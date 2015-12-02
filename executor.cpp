@@ -96,7 +96,7 @@ int Executor::execute(string query_string){
         if (parsed_query.cmp_op == '<'){
             nhits = rtree.SearchOverlap(parsed_query.rect.min, parsed_query.rect.max, LessCallback, vp);
         }
-        cout << "Search resulted in " << nhits << " hits\n";
+        //cout << "Search resulted in " << nhits << " hits\n";
         return nhits;
     }
 
