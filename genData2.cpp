@@ -1,3 +1,5 @@
+INSERT INTO gis1 VALUES (PolygonFromText('POLYGON(( 45800.8 12860.7, 45845.4 12860.7, 45845.4 12905.4, 45800.8 12860.7 ))'), 'red');
+
 #include <iostream>
 #include <vector>
 #include <random>
