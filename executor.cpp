@@ -23,6 +23,8 @@ int Executor::execute(string query_string){
     TableData& tb_data = *(table_map[table_name]);
     MyTree& rtree = tb_data.rtree_;
 
+    cout<< "[exe log:] query_type:" << parsed_query.query_type <<endl;
+
     if (parsed_query.query_type == "insert"){
         int row_id = tb_data.row_id_++;
         tb_data.rect_in_row_[row_id] = parsed_query.rect;
