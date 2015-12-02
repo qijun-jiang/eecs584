@@ -37,6 +37,8 @@ public:
 
 };
 
+void print_parser_result(ParserResult result);
+
 
 #endif
 

@@ -25,6 +25,11 @@ double get_double(string table_name, string attr_name) {
     }
 }
 
+
+void Parser::print_parser_result(ParserResult result) {
+    return
+}
+
 //
 ParserResult Parser::Parse(string query) {
     ParserResult result;
