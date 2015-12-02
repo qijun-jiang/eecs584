@@ -24,50 +24,37 @@ bool NoCompareCallback(ValueType id, void* arg)
 bool GreaterCallback(ValueType id, void* arg)
 {
     CompareInfo* compare_info = (struct CompareInfo *)arg;
-    cout << "Hit data rect [" << id << "] in" << compare_info->table_name << ":";
     TableData& tb_data = *(table_map[compare_info->table_name]);
-    
-
     // Check greater than
     if (compare_info->attr_value < tb_data.attribute_in_row_[id]) {
-        cout<< " " << tb_data.rect_in_row_[id].min[0] << " " << tb_data.rect_in_row_[id].min[1] << " "
-            << tb_data.rect_in_row_[id].max[0] << " "<< tb_data.rect_in_row_[id].max[1] <<endl;
         return true;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 bool LessCallback(ValueType id, void* arg)
 {
     CompareInfo* compare_info = (struct CompareInfo *)arg;
-    cout << "Hit data rect [" << id << "] in" << compare_info->table_name << ":";
     TableData& tb_data = *(table_map[compare_info->table_name]);
-    
     // Check less than
     if (compare_info->attr_value > tb_data.attribute_in_row_[id]) {
-        cout<< " " << tb_data.rect_in_row_[id].min[0] << " " << tb_data.rect_in_row_[id].min[1] << " "
-            << tb_data.rect_in_row_[id].max[0] << " "<< tb_data.rect_in_row_[id].max[1] <<endl;
-
         return true;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 bool EqualCallback(ValueType id, void* arg)
 {
     CompareInfo* compare_info = (struct CompareInfo *)arg;
-    cout << "Hit data rect [" << id << "] in" << compare_info->table_name << ":";
     TableData& tb_data = *(table_map[compare_info->table_name]);
     // Check equal
     if (compare_info->attr_value == tb_data.attribute_in_row_[id]) {
-        cout<< " " << tb_data.rect_in_row_[id].min[0] << " " << tb_data.rect_in_row_[id].min[1] << " "
-            << tb_data.rect_in_row_[id].max[0] << " "<< tb_data.rect_in_row_[id].max[1] <<endl;
         return true;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 
@@ -84,7 +71,7 @@ int Executor::execute(string query_string){
     TableData& tb_data = *(table_map[table_name]);
     MyTree& rtree = tb_data.rtree_;
 
-    cout<< "[exe log:] query_type:" << parsed_query.query_type <<endl;
+    // cout<< "[exe log:] query_type:" << parsed_query.query_type <<endl;
 
     if (parsed_query.query_type == "insert"){
         int row_id = tb_data.row_id_++;
@@ -98,16 +85,16 @@ int Executor::execute(string query_string){
         void *vp = static_cast<void*>(&compare_info);
         int nhits;
         if (parsed_query.cmp_op == '?'){
-            nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.max, NoCompareCallback, vp);
+            nhits = rtree.SearchOverlap(parsed_query.rect.min, parsed_query.rect.max, NoCompareCallback, vp);
         }
         if (parsed_query.cmp_op == '='){
-            nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.max, EqualCallback, vp);
+            nhits = rtree.SearchOverlap(parsed_query.rect.min, parsed_query.rect.max, EqualCallback, vp);
         }
         if (parsed_query.cmp_op == '>'){
-            nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.max, GreaterCallback, vp);
+            nhits = rtree.SearchOverlap(parsed_query.rect.min, parsed_query.rect.max, GreaterCallback, vp);
         }
         if (parsed_query.cmp_op == '<'){
-            nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.max, LessCallback, vp);
+            nhits = rtree.SearchOverlap(parsed_query.rect.min, parsed_query.rect.max, LessCallback, vp);
         }
         cout << "Search resulted in " << nhits << " hits\n";
         return nhits;
