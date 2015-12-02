@@ -1,5 +1,3 @@
-INSERT INTO gis1 VALUES (PolygonFromText('POLYGON(( 45800.8 12860.7, 45845.4 12860.7, 45845.4 12905.4, 45800.8 12860.7 ))'), 'red');
-
 #include <iostream>
 #include <vector>
 #include <random>
@@ -44,50 +42,44 @@ Polygon randSearchBox(double side) {
 int main(int argc, char** argv) {
 	
 	vector<Polygon> poly_list;
-	int n_insert = 3000000;
-	int n_step = 200000;
-	int num_query = n_insert / n_step;
+	int n_insert = 100;
+	
 
-	string filename = "load1.sql";
+	string filename = "load.sql";
 	ofstream fs(filename);
 	fs << "DROP TABLE gis1;\n";
 	fs << "CREATE TABLE gis1 (g GEOMETRY NOT NULL, color VARCHAR(12), SPATIAL INDEX(g)) ENGINE=MyISAM;\n";
 
-	for (int k = 0; k < num_query; k++) {
-		fs << "INSERT INTO gis1 VALUES\n";
-		for (int i = 0; i < n_step; i++) {
-			Polygon p = randPolygon();
-			fs << "(PolygonFromText('POLYGON((";
-			for (int j = 0; j < 3; j++) {
-				fs << p[j].first << " " << p[j].second << ", ";
-			}
-			fs << p[0].first << " " << p[0].second << "))'),";
-			
-			if (unif_0_1(gen) > 0.5) {
-				fs << "'red')";
-			}
-			else {
-				fs << "'blue')";
-			}
-			if (i != n_step-1) {
-				fs << ",\n";
-			}
+	for (int i = 0; i < n_insert; i++) {
+		fs << "INSERT INTO gis1 VALUES ";
+		Polygon p = randPolygon();
+		fs << "(PolygonFromText('POLYGON(( ";
+		for (int j = 0; j < 4; j++) {
+			fs << p[j].first << " " << p[j].second << ", ";
+		}
+		fs << p[0].first << " " << p[0].second << " ))'), ";
+		
+		if (unif_0_1(gen) > 0.5) {
+			fs << "'red')";
+		}
+		else {
+			fs << "'blue')";
 		}
 		fs << ";\n";
 	}
 	fs.close();
 
 	int n_search = 100;
-	ofstream fs1("search1.sql");
+	ofstream fs1("search.sql");
 	for (int i = 0; i < n_search; i++) {
 		Polygon p = randSearchBox(100000.0);
-		fs1 << "SELECT COUNT(*) FROM gis1 WHERE ST_CONTAINS(";
-		fs1 << "PolygonFromText('POLYGON((";
-		for (int j = 0; j <= 3; j++) {
+		fs1 << "SELECT COUNT(*) FROM gis1 WHERE ST_CONTAINS (";
+		fs1 << "PolygonFromText('POLYGON(( ";
+		for (int j = 0; j < 4; j++) {
 			fs1 << p[j].first << " " << p[j].second << ", ";
 		}
-		fs1 << p[0].first << " " << p[0].second << "))'), g) AND ";
-		fs1 << "color='red';\n";
+		fs1 << p[0].first << " " << p[0].second << " ))'), g) AND ";
+		fs1 << "color = 'red';\n";
 	}
 
 	return 0;
