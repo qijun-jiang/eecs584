@@ -9,6 +9,8 @@
 #include <map>
 #include "RTree.h"
 
+using namespace std;
+
 typedef int ValueType;
 typedef RTree<ValueType, double, 2, double> MyTree;
 
