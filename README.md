@@ -1,4 +1,10 @@
 # eecs584
+server compile command: g++ server.cpp executor.cpp parser.cpp -o server
+server execute command: ./server
+
+client compile commnad: g++ client.cpp -o client
+client execute command: ./client -s <hostname:port> -q <useless opt, whatever string>
+
 output: load.sql, search.sql
 
 usage: mysql -u root 584test -p
