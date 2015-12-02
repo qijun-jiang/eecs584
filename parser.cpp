@@ -96,7 +96,7 @@ ParserResult Parser::Parse(string query) {
     return result;
 }
 
-int main() {
+/*int main() {
     Parser parser;
     ParserResult r = parser.Parse("SELECT COUNT(*) FROM gis1 WHERE ST_CONTAINS (PolygonFromText('POLYGON(( 24585.6 8324.77, 34585.6 8324.77, 34585.6 18324.8, 24585.6 18324.8, 24585.6 8324.77 ))'), g) AND color = 'red';");
     // parser.Parse("INSERT INTO gis1 VALUES (PolygonFromText('POLYGON(( 89031.9 55459.7, 89147.3 55459.7, 89147.3 55575.1, 89031.9 55575.1, 89031.9 55459.7 ))'), 'blue');");
@@ -104,7 +104,7 @@ int main() {
     // for (auto it = table_map["gis1"]->string_map_.begin(); it != table_map["gis1"]->string_map_.end(); it++) {
     //  cout << it->first << " " << it->second << endl;
     // }
-}
+}*/
 
 
 

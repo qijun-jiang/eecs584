@@ -143,6 +143,7 @@ int main(int argc, char *argv[])
 
     /* receive queries and response answers to the client */
     while (1) {
+
       server_recvquery(td, query); 
       fprintf(stderr, "%s\n", query);
 
@@ -155,7 +156,8 @@ int main(int argc, char *argv[])
 
       /* if it is not terminated */
       // process the query 
-      // execute(query);
+      string qry(query);
+      fprintf(stderr, "result = %d\n", query_executor.execute(qry));
 
       // send response to the client
       server_sendresponse(td, response);
