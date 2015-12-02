@@ -42,7 +42,7 @@ Polygon randSearchBox(double side) {
 int main(int argc, char** argv) {
 	
 	vector<Polygon> poly_list;
-	int n_insert = 20000000;
+	int n_insert = 10000000;
 	
 
 	string filename = "sql/load.sql";
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 	}
 	fs.close();
 
-	int n_search = 10000;
+	int n_search = 5000;
 	ofstream fs1("sql/search.sql");
 	for (int i = 0; i < n_search; i++) {
 		Polygon p = randSearchBox(100000.0);

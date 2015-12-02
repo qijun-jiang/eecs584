@@ -49,6 +49,7 @@ bool EqualCallback(ValueType id, void* arg)
 {
     CompareInfo* compare_info = (struct CompareInfo *)arg;
     TableData& tb_data = *(table_map[compare_info->table_name]);
+    //cout << "Hit data rect [" << id << "] in" << compare_info->table_name << ":";
     // Check equal
     if (compare_info->attr_value == tb_data.attribute_in_row_[id]) {
         return true;
@@ -85,18 +86,18 @@ int Executor::execute(string query_string){
         void *vp = static_cast<void*>(&compare_info);
         int nhits;
         if (parsed_query.cmp_op == '?'){
-            nhits = rtree.SearchOverlap(parsed_query.rect.min, parsed_query.rect.max, NoCompareCallback, vp);
+            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, NoCompareCallback, vp);
         }
         if (parsed_query.cmp_op == '='){
-            nhits = rtree.SearchOverlap(parsed_query.rect.min, parsed_query.rect.max, EqualCallback, vp);
+            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, EqualCallback, vp);
         }
         if (parsed_query.cmp_op == '>'){
-            nhits = rtree.SearchOverlap(parsed_query.rect.min, parsed_query.rect.max, GreaterCallback, vp);
+            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, GreaterCallback, vp);
         }
         if (parsed_query.cmp_op == '<'){
-            nhits = rtree.SearchOverlap(parsed_query.rect.min, parsed_query.rect.max, LessCallback, vp);
+            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, LessCallback, vp);
         }
-        //cout << "Search resulted in " << nhits << " hits\n";
+        cout << "Search resulted in " << nhits << " hits\n";
         return nhits;
     }
 

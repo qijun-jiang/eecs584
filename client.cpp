@@ -140,6 +140,7 @@ int main(int argc, char *argv[])
   char query[QUERY_MAXLENGTH] = { 0 };
   char response[RESPONSE_MAXLENGTH] = { 0 };
   int counter = 0;
+  int cnt_top_10 = 0;
 
   /* parse args */
   if (client_args(argc, argv, &server_name, &port, search_file_name)) {
@@ -171,8 +172,9 @@ int main(int argc, char *argv[])
       else {
         fprintf(stderr, "error in sending query.\n");
       }
-
-      if (counter == 20) {
+      cnt_top_10++;
+      counter++;
+      if (counter == 10 || cnt_top_10 < 10) {
         fprintf(stderr, "[client log:] time = %f\n", ((double)(clock() - startTime))/CLOCKS_PER_SEC);
         counter = 0;
       }
