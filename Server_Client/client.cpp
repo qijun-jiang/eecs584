@@ -16,8 +16,7 @@
 
 int sd;                   /* socket descriptor */
 
-void
-client_usage(char *progname)
+void client_usage(char *progname)
 {
   fprintf(stderr, "Usage: %s -s <server>:<port> -q <query>\n",
           progname); 
@@ -31,8 +30,7 @@ client_usage(char *progname)
  * "*imagename" : the name of the image to search for
  * "*vers"      : the version used for query packet
  */
-int
-client_args(int argc, char *argv[], char **sname, u_short *port, char *query)
+int client_args(int argc, char *argv[], char **sname, u_short *port, char *query)
 {
   char c, *p;
   extern char *optarg;
@@ -72,8 +70,7 @@ client_args(int argc, char *argv[], char **sname, u_short *port, char *query)
  * On success, the global socket descriptor sd is initialized.
  * On error, terminates process.
  */
-void
-client_sockinit(char *sname, u_short port)
+void client_sockinit(char *sname, u_short port)
 {
   /* 
    * create a new TCP socket, store the socket in the global variable sd
@@ -102,8 +99,7 @@ client_sockinit(char *sname, u_short port)
 /*
  * client_sendquery: send query to server
  */
-int
-client_sendquery(char *query)
+int client_sendquery(char *query)
 {
   int bytes;
   bytes = send(sd, query, QUERY_MAXLENGTH, 0);
@@ -116,8 +112,7 @@ client_sendquery(char *query)
 /*
  * client_sendquery: send termination message to server
  */
-void
-client_sendtermination()
+void client_sendtermination()
 {
   if (send(sd, "terminate", QUERY_MAXLENGTH, 0) < 0)
     abort();
@@ -127,16 +122,14 @@ client_sendtermination()
 /*
  * client_recvresponse: receive response from server
  */
-int
-client_recvresponse(char* response)
+int client_recvresponse(char* response)
 {
   if (recv(sd, response, RESPONSE_MAXLENGTH, 0) <= 0) 
     return 0;
   else return 1;
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   int err;
   char *server_name;
