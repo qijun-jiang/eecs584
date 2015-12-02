@@ -10,6 +10,7 @@
 #include <arpa/inet.h>     // htons(), inet_ntoa()
 #include <sys/types.h>     // u_short
 #include <sys/socket.h>    // socket API, setsockopt(), getsockname()
+#include <sys/time.h>
 #include "client.h"
 #include "executor.h"
 
@@ -104,7 +105,7 @@ void server_recvquery(int td, char *query)
 /* 
  * server_sendresponse: send response through td 
  */
-void server_sendresponse(int td, char *response)
+void server_sendresponse(int td, char const *response)
 {
   if (send(td, response, RESPONSE_MAXLENGTH, 0) < 0)
     abort();
@@ -117,20 +118,24 @@ void load_data(char* file_name, Executor &query_executor) {
   long int counter = 0;
 
   fprintf(stderr, "load data\n");
-  clock_t startTime = clock();
+  struct timeval startTime;
+  struct timeval endTime;
+  gettimeofday(&startTime, NULL);
+
   while (std::getline(load_file, query)) {
     query_executor.execute(query);
     counter++;
 
     if (counter == 200000) {
-      fprintf(stderr, "[server log:] time = %f\n", (double)(clock() - startTime) / CLOCKS_PER_SEC);
+      gettimeofday(&endTime, NULL);
+      fprintf(stderr, "[server log:] time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);
       counter = 0;
     }
     //fprintf(stderr, "query = %s\n", query.c_str());
     //fprintf(stderr, "result = %d\n", query_executor.execute(query));
   }
-  clock_t endTime = clock();
-  fprintf(stderr, "time = %f\n", ((double)(endTime - startTime))/CLOCKS_PER_SEC);
+  gettimeofday(&endTime, NULL);
+  fprintf(stderr, "[server log:] time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);      
   return;
 }
 
@@ -166,11 +171,11 @@ int main(int argc, char *argv[])
       /* if it is not terminated */
       // process the query 
       string qry(query);
-      query_executor.execute(qry);
+      int ans = query_executor.execute(qry);
      // fprintf(stderr, "result = %d\n", query_executor.execute(qry));
 
       // send response to the client
-      server_sendresponse(td, response);
+      server_sendresponse(td, to_string(ans).c_str());
     }
   }
 

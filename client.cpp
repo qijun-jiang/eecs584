@@ -8,6 +8,7 @@
 #include <arpa/inet.h>     // htons()
 #include <sys/types.h>     // u_short
 #include <sys/socket.h>    // socket API
+#include <sys/time.h>
 #include <fstream>
 #include <iostream>
 #include <cstdio>
@@ -18,7 +19,7 @@ int sd;                   /* socket descriptor */
 
 void client_usage(char *progname)
 {
-  fprintf(stderr, "Usage: %s -s <server>:<port> -f <search_file_name>\n",
+  fprintf(stderr, "Usage: %s -s <server>:<port> -q <query_file>\n",
           progname); 
   exit(1);
 }
@@ -39,7 +40,7 @@ int client_args(int argc, char *argv[], char **sname, u_short *port, char *fname
     return (1);
   }
   
-  while ((c = getopt(argc, argv, "s:f:")) != EOF) {
+  while ((c = getopt(argc, argv, "s:q:")) != EOF) {
     switch (c) {
     case 's':
       for (p = optarg+strlen(optarg)-1;      // point to last character of addr:port arg
@@ -50,7 +51,7 @@ int client_args(int argc, char *argv[], char **sname, u_short *port, char *fname
       *port = htons((u_short) atoi(p)); // always stored in network byte order
       *sname = optarg;
       break;
-    case 'f':
+    case 'q':
       memcpy(fname, optarg, strlen(optarg));
       break;
     default:
@@ -134,26 +135,29 @@ int main(int argc, char *argv[])
   int err;
   char *server_name;
   u_short port;
-  clock_t startTime;
-  clock_t endTime;
-  char search_file_name[100] = { 0 };
+  struct timeval startTime;
+  struct timeval endTime;
+  char query_file_name[100] = { 0 };
+  std::string result_file_name = "sql/result_";
   char query[QUERY_MAXLENGTH] = { 0 };
   char response[RESPONSE_MAXLENGTH] = { 0 };
   int counter = 0;
   int cnt_top_10 = 0;
 
   /* parse args */
-  if (client_args(argc, argv, &server_name, &port, search_file_name)) {
+  if (client_args(argc, argv, &server_name, &port, query_file_name)) {
     client_usage(argv[0]);
   }
 
   client_sockinit(server_name, port); 
 
-  std::ifstream input_file(search_file_name);
+  result_file_name += query_file_name;
+  std::ifstream input_file(query_file_name);
+  std::ofstream output_file(result_file_name);
   if (input_file.is_open()) {
 
     /* set the start time */
-    startTime = clock();
+    gettimeofday(&startTime, NULL);
 
     /*
      * read queries from input file line by line
@@ -165,6 +169,7 @@ int main(int argc, char *argv[])
       if (client_sendquery(query)) {
         if (client_recvresponse(response) == 1) {
         //  fprintf(stderr, "query found: response = %s\n", response);
+          output_file << response << '\n';
         } else {
           fprintf(stderr, "query not found.\n");
         } 
@@ -175,21 +180,19 @@ int main(int argc, char *argv[])
       cnt_top_10++;
       counter++;
       if (counter == 10 || cnt_top_10 < 10) {
-        fprintf(stderr, "[client log:] time = %f\n", ((double)(clock() - startTime))/CLOCKS_PER_SEC);
+        gettimeofday(&endTime, NULL);
+        fprintf(stderr, "[client log:] time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);
         counter = 0;
       }
     }
 
     /* set the end time */
-    endTime = clock();
-
+    gettimeofday(&endTime, NULL);
+    fprintf(stderr, "[client log:] time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);
+    
     /* send the termination to server to close the connection */
     client_sendtermination();
   }
-
-  fprintf(stderr, "time = %f\n", ((double)(endTime - startTime))/CLOCKS_PER_SEC);
-
-  
   
   return(0);
 }
