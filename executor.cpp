@@ -13,9 +13,9 @@ struct CompareInfo{
 
 bool NoCompareCallback(ValueType id, void* arg)
 {
-    CompareInfo compare_info = (struct CompareInfo *)arg;
+    CompareInfo* compare_info = (struct CompareInfo *)arg;
     cout << "Hit data rect [" << id << "] in" << compare_info->table_name << ":";
-    TableData& tb_data = *(table_map[*table_name]);
+    TableData& tb_data = *(table_map[compare_info->table_name]);
     cout<< " " << tb_data.rect_in_row_[id].min[0] << " " << tb_data.rect_in_row_[id].min[1] << " "
         << tb_data.rect_in_row_[id].max[0] << " "<< tb_data.rect_in_row_[id].max[1] <<endl;
     return true; // keep going
@@ -23,9 +23,9 @@ bool NoCompareCallback(ValueType id, void* arg)
 
 bool GreaterCallback(ValueType id, void* arg)
 {
-    CompareInfo compare_info = (struct CompareInfo *)arg;
+    CompareInfo* compare_info = (struct CompareInfo *)arg;
     cout << "Hit data rect [" << id << "] in" << compare_info->table_name << ":";
-    TableData& tb_data = *(table_map[*table_name]);
+    TableData& tb_data = *(table_map[compare_info->table_name]);
     cout<< " " << tb_data.rect_in_row_[id].min[0] << " " << tb_data.rect_in_row_[id].min[1] << " "
         << tb_data.rect_in_row_[id].max[0] << " "<< tb_data.rect_in_row_[id].max[1] <<endl;
 
@@ -39,9 +39,9 @@ bool GreaterCallback(ValueType id, void* arg)
 
 bool LessCallback(ValueType id, void* arg)
 {
-    CompareInfo compare_info = (struct CompareInfo *)arg;
+    CompareInfo* compare_info = (struct CompareInfo *)arg;
     cout << "Hit data rect [" << id << "] in" << compare_info->table_name << ":";
-    TableData& tb_data = *(table_map[*table_name]);
+    TableData& tb_data = *(table_map[compare_info->table_name]);
     cout<< " " << tb_data.rect_in_row_[id].min[0] << " " << tb_data.rect_in_row_[id].min[1] << " "
         << tb_data.rect_in_row_[id].max[0] << " "<< tb_data.rect_in_row_[id].max[1] <<endl;
 
@@ -55,9 +55,9 @@ bool LessCallback(ValueType id, void* arg)
 
 bool EqualCallback(ValueType id, void* arg)
 {
-    CompareInfo compare_info = (struct CompareInfo *)arg;
+    CompareInfo* compare_info = (struct CompareInfo *)arg;
     cout << "Hit data rect [" << id << "] in" << compare_info->table_name << ":";
-    TableData& tb_data = *(table_map[*table_name]);
+    TableData& tb_data = *(table_map[compare_info->table_name]);
     cout<< " " << tb_data.rect_in_row_[id].min[0] << " " << tb_data.rect_in_row_[id].min[1] << " "
         << tb_data.rect_in_row_[id].max[0] << " "<< tb_data.rect_in_row_[id].max[1] <<endl;
 
