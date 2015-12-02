@@ -6,7 +6,7 @@ bool MySearchCallback(ValueType id, void* arg)
 {
     std::string *table_name = static_cast<std::string*>(arg);
     cout << "Hit data rect [" << id << "] in" << *table_name << ":";
-    TableData& tb_data = *(table_map[table_name]);
+    TableData& tb_data = *(table_map[*table_name]);
     cout<< " " << tb_data.rect_in_row_[id].min[0] << " " << tb_data.rect_in_row_[id].min[1] << " "
         << tb_data.rect_in_row_[id].max[0] << " "<< tb_data.rect_in_row_[id].min[1] <<endl;
   return true; // keep going
@@ -38,7 +38,7 @@ int Executor::execute(string query_string){
         rtree.Insert(parsed_query.rect.min, parsed_query.rect.max, row_id);
     }
 
-    if (parsed_query.query_type == "query"){
+    if (parsed_query.query_type == "select"){
         void *void_table_name = static_cast<void*>(&table_name);
         int nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.min, MySearchCallback, void_table_name);
         cout << "Search resulted in " << nhits << " hits\n";
