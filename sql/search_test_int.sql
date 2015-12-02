@@ -1,0 +1,1 @@
+SELECT COUNT(*) FROM gis1 WHERE ST_CONTAINS (PolygonFromText('POLYGON(( 6 4, 10 4, 10 6.5, 6 6.5, 6 4 ))'), g) AND color < '2.5';

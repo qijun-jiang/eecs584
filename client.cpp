@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
 
   client_sockinit(server_name, port); 
 
-  std::ifstream input_file("sql/search.sql");
+  std::ifstream input_file("sql/search_test_int.sql");
   if (input_file.is_open()) {
 
     /* set the start time */

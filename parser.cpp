@@ -7,6 +7,7 @@ map<string, TableData*> table_map;
 double get_double(string table_name, string attr_name) {
     stringstream ss;
     ss << attr_name;
+    cout<< "[parse log:] attr_name = '" << attr_name << "'" <<endl;
     double value;
     if (ss >> value) {
         return value;

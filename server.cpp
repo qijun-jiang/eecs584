@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
   char query[QUERY_MAXLENGTH] = { 0 };
   char response[RESPONSE_MAXLENGTH] = "response\0";
   char termination[RESPONSE_MAXLENGTH] = "terminate\0";
-  char load_file[50] = "sql/load.sql\0";
+  char load_file[50] = "sql/load_test_int.sql\0";
   Executor query_executor;
 
   load_data(load_file, query_executor);
