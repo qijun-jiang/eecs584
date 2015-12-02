@@ -159,10 +159,10 @@ int main(int argc, char *argv[])
      */
     while (!input_file.eof()) {
       input_file.getline(query, QUERY_MAXLENGTH);
-      fprintf(stderr, "query = %s\n", query);
+      //fprintf(stderr, "query = %s\n", query);
       if (client_sendquery(query)) {
         if (client_recvresponse(response) == 1) {
-          fprintf(stderr, "query found: response = %s\n", response);
+        //  fprintf(stderr, "query found: response = %s\n", response);
         } else {
           fprintf(stderr, "query not found.\n");
         } 

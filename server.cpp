@@ -114,11 +114,20 @@ void server_sendresponse(int td, char *response)
 void load_data(char* file_name, Executor &query_executor) {
   std::ifstream load_file(file_name);
   std::string   query;
+  long int counter = 0;
+
   fprintf(stderr, "load data\n");
   clock_t startTime = clock();
   while (std::getline(load_file, query)) {
-    fprintf(stderr, "query = %s\n", query.c_str());
-    fprintf(stderr, "result = %d\n", query_executor.execute(query));
+    query_executor.execute(query);
+    counter++;
+
+    if (counter == 200000) {
+      fprintf(stderr, "[server log:] time = %f\n", (double)(clock() - startTime) / CLOCKS_PER_SEC);
+      counter = 0;
+    }
+    //fprintf(stderr, "query = %s\n", query.c_str());
+    //fprintf(stderr, "result = %d\n", query_executor.execute(query));
   }
   clock_t endTime = clock();
   fprintf(stderr, "time = %f\n", ((double)(endTime - startTime))/CLOCKS_PER_SEC);
@@ -131,7 +140,7 @@ int main(int argc, char *argv[])
   char query[QUERY_MAXLENGTH] = { 0 };
   char response[RESPONSE_MAXLENGTH] = "response\0";
   char termination[RESPONSE_MAXLENGTH] = "terminate\0";
-  char load_file[50] = "sql/load_test_int.sql\0";
+  char load_file[50] = "sql/load.sql\0";
   Executor query_executor;
 
   load_data(load_file, query_executor);
@@ -145,7 +154,7 @@ int main(int argc, char *argv[])
     while (1) {
 
       server_recvquery(td, query); 
-      fprintf(stderr, "%s\n", query);
+     // fprintf(stderr, "%s\n", query);
 
       /* check termination */
       if (strcmp(query, "terminate") == 0) {
@@ -157,7 +166,8 @@ int main(int argc, char *argv[])
       /* if it is not terminated */
       // process the query 
       string qry(query);
-      fprintf(stderr, "result = %d\n", query_executor.execute(qry));
+      query_executor.execute(qry);
+     // fprintf(stderr, "result = %d\n", query_executor.execute(qry));
 
       // send response to the client
       server_sendresponse(td, response);

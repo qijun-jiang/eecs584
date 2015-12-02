@@ -31,10 +31,10 @@ Polygon randSearchBox(double side) {
 	Polygon p;
 	double x = unif_size(gen);
 	double y = unif_size(gen);
-	p.push_back(Point(x-side/20, y-side/20));
-	p.push_back(Point(x+side/20, y-side/20));
-	p.push_back(Point(x+side/20, y+side/20));
-	p.push_back(Point(x-side/20, y+side/20));
+	p.push_back(Point(x-side/10, y-side/10));
+	p.push_back(Point(x+side/10, y-side/10));
+	p.push_back(Point(x+side/10, y+side/10));
+	p.push_back(Point(x-side/10, y+side/10));
 	return p;
 }
 
@@ -42,10 +42,10 @@ Polygon randSearchBox(double side) {
 int main(int argc, char** argv) {
 	
 	vector<Polygon> poly_list;
-	int n_insert = 100;
+	int n_insert = 20000000;
 	
 
-	string filename = "load.sql";
+	string filename = "sql/load.sql";
 	ofstream fs(filename);
 	fs << "DROP TABLE gis1;\n";
 	fs << "CREATE TABLE gis1 (g GEOMETRY NOT NULL, color VARCHAR(12), SPATIAL INDEX(g)) ENGINE=MyISAM;\n";
@@ -69,8 +69,8 @@ int main(int argc, char** argv) {
 	}
 	fs.close();
 
-	int n_search = 100;
-	ofstream fs1("search.sql");
+	int n_search = 10000;
+	ofstream fs1("sql/search.sql");
 	for (int i = 0; i < n_search; i++) {
 		Polygon p = randSearchBox(100000.0);
 		fs1 << "SELECT COUNT(*) FROM gis1 WHERE ST_CONTAINS (";
@@ -79,7 +79,8 @@ int main(int argc, char** argv) {
 			fs1 << p[j].first << " " << p[j].second << ", ";
 		}
 		fs1 << p[0].first << " " << p[0].second << " ))'), g) AND ";
-		fs1 << "color = 'red';\n";
+		fs1 << "color = 'red';";
+		if (i != n_search-1) fs1 << "\n";
 	}
 
 	return 0;
