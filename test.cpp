@@ -10,12 +10,13 @@
 using namespace std;
 
 typedef int ValueType;
+typedef double ELEMTYPE;
 
 struct Rect
 {
   Rect()  {}
 
-  Rect(int a_minX, int a_minY, int a_maxX, int a_maxY)
+  Rect(ELEMTYPE a_minX, ELEMTYPE a_minY, ELEMTYPE a_maxX, ELEMTYPE a_maxY)
   {
     min[0] = a_minX;
     min[1] = a_minY;
@@ -25,21 +26,22 @@ struct Rect
   }
 
 
-  int min[2];
-  int max[2];
+  ELEMTYPE min[2];
+  ELEMTYPE max[2];
 };
 
 struct Rect rects[] =
 {
-  Rect(0, 0, 2, 2), // xmin, ymin, xmax, ymax (for 2 dimensional RTree)
-  Rect(5, 5, 7, 7),
+  Rect(0.0, 0.0, 2.0, 2), // xmin, ymin, xmax, ymax (for 2 dimensional RTree)
+  Rect(5, 5, 7, 7.0),
   Rect(8, 5, 9, 6),
   Rect(7, 1, 9, 2),
+  Rect(9.9, 6.4, 91, 21),
 };
 
 int nrects = sizeof(rects) / sizeof(rects[0]);
 
-Rect search_rect(6, 4, 10, 6); // search will find above rects that this one overlaps
+Rect search_rect(6.0, 4.0, 10, 6.5); // search will find above rects that this one overlaps
 
 
 bool MySearchCallback(ValueType id, void* arg)
@@ -51,7 +53,7 @@ bool MySearchCallback(ValueType id, void* arg)
 
 int main()
 {
-  typedef RTree<ValueType, int, 2, float> MyTree;
+  typedef RTree<ValueType, ELEMTYPE, 2, float> MyTree;
   MyTree tree;
 
   int i, nhits;
@@ -66,9 +68,10 @@ int main()
 
   cout << "Search resulted in " << nhits << " hits\n";
 
-  // Iterator test
+/*
   int itIndex = 0;
   MyTree::Iterator it;
+  // Iterator test
   for( tree.GetFirst(it);
        !tree.IsNull(it);
        tree.GetNext(it) )
@@ -90,6 +93,7 @@ int main()
     ++it;
     cout << "it[" << itIndex++ << "] " << value << "\n";
   }
+*/
 
   return 0;
 

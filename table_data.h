@@ -12,7 +12,9 @@
 using namespace std;
 
 typedef int ValueType;
-typedef RTree<ValueType, double, 2, double> MyTree;
+typedef double ELEMTYPE;
+
+typedef RTree<ValueType, ELEMTYPE, 2, double> MyTree;
 
 struct Rect {
     double min[2];
