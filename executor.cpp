@@ -4,8 +4,11 @@ using namespace std;
 
 bool MySearchCallback(ValueType id, void* arg)
 {
-  std::string *table_name = static_cast<std::string*>(arg);
-  cout << "Hit data rect " << id << " " << *table_name << "\n";
+    std::string *table_name = static_cast<std::string*>(arg);
+    cout << "Hit data rect [" << id << "] in" << *table_name << ":";
+    TableData& tb_data = *(table_map[table_name]);
+    cout<< " " << tb_data.rect_in_row_[id].min[0] << " " << tb_data.rect_in_row_[id].min[1] << " "
+        << tb_data.rect_in_row_[id].max[0] << " "<< tb_data.rect_in_row_[id].min[1] <<endl;
   return true; // keep going
 }
 
