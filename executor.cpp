@@ -27,8 +27,8 @@ int Executor::execute(string query_string){
 
     if (parsed_query.query_type == "insert"){
         int row_id = tb_data.row_id_++;
-        tb_data.rect_in_row_[row_id] = parsed_query.rect;
-        tb_data.attribute_in_row_[row_id] = parsed_query.attr_value;
+        tb_data.rect_in_row_.push_back(parsed_query.rect);
+        tb_data.attribute_in_row_.push_back(parsed_query.attr_value);
         cout<<"[exe log:] tb-name:" << table_name;
         cout<< parsed_query.rect.min[0] << " " << parsed_query.rect.min[1] << " "
             << parsed_query.rect.max[0] << " "<< parsed_query.rect.min[1] <<endl;
