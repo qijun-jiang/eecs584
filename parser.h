@@ -27,7 +27,9 @@ struct ParserResult {
     char cmp_op;
     double attr_value;
 
-    ParserResult() {}
+    ParserResult() {
+        cmp_op = '?';
+    }
 };
 
 class Parser {

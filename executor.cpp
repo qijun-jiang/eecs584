@@ -95,7 +95,19 @@ int Executor::execute(string query_string){
     if (parsed_query.query_type == "select"){
         CompareInfo compare_info(table_name, parsed_query.attr_value);
         void *vp = static_cast<void*>(&compare_info);
-        int nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.max, NoCompareCallback, vp);
+        int nhits;
+        if (parsed_query->cmp_op == '?'){
+            nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.max, NoCompareCallback, vp);
+        }
+        if (parsed_query->cmp_op == '='){
+            nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.max, EqualCallback, vp);
+        }
+        if (parsed_query->cmp_op == '>'){
+            nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.max, GreaterCallback, vp);
+        }
+        if (parsed_query->cmp_op == '<'){
+            nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.max, LessCallback, vp);
+        }
         cout << "Search resulted in " << nhits << " hits\n";
         return nhits;
     }
