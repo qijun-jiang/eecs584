@@ -10,6 +10,9 @@
 #include <stdlib.h>
 
 #include <algorithm>
+#include <iostream>
+
+using namespace std;
 
 #define ASSERT assert // RTree uses ASSERT( condition )
 #ifndef Min
@@ -94,7 +97,7 @@ public:
   /// \param a_context User context to pass as parameter to a_resultCallback
   /// \return Returns the number of entries found
   int SearchOverlap(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS], t_resultCallback a_resultCallback, void* a_context);
-  
+  int SearchContain(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS], t_resultCallback a_resultCallback, void* a_context);
   /// Remove all entries from tree
   void RemoveAll();
 
@@ -354,8 +357,10 @@ protected:
   ListNode* AllocListNode();
   void FreeListNode(ListNode* a_listNode);
   bool Overlap(Rect* a_rectA, Rect* a_rectB);
+  bool Contain(Rect* a_rectA, Rect* a_rectB);
   void ReInsert(Node* a_node, ListNode** a_listNode);
   bool SearchOverlap(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context);
+  bool SearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context);
   void RemoveAllRec(Node* a_node);
   void Reset();
   void CountRec(Node* a_node, int& a_count);
@@ -544,6 +549,32 @@ int RTREE_QUAL::SearchOverlap(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_ma
 
   int foundCount = 0;
   SearchOverlap(m_root, &rect, foundCount, a_resultCallback, a_context);
+
+  return foundCount;
+}
+
+RTREE_TEMPLATE
+int RTREE_QUAL::SearchContain(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS], t_resultCallback a_resultCallback, void* a_context)
+{
+#ifdef _DEBUG
+  for(int index=0; index<NUMDIMS; ++index)
+  {
+    ASSERT(a_min[index] <= a_max[index]);
+  }
+#endif //_DEBUG
+
+  Rect rect;
+  
+  for(int axis=0; axis<NUMDIMS; ++axis)
+  {
+    rect.m_min[axis] = a_min[axis];
+    rect.m_max[axis] = a_max[axis];
+  }
+
+  // NOTE: May want to return search result another way, perhaps returning the number of found elements here.
+
+  int foundCount = 0;
+  SearchContain(m_root, &rect, foundCount, a_resultCallback, a_context);
 
   return foundCount;
 }
@@ -1531,6 +1562,24 @@ bool RTREE_QUAL::Overlap(Rect* a_rectA, Rect* a_rectB)
   return true;
 }
 
+// Decide whether a_rectA contains a_rectB.
+RTREE_TEMPLATE
+bool RTREE_QUAL::Contain(Rect* a_rectA, Rect* a_rectB)
+{
+  ASSERT(a_rectA && a_rectB);
+  //cout<<"[Rtree log:] test recB:"<< a_rectB->m_min[0]<<" "<< a_rectB->m_min[1] << " "<<a_rectB->m_max[0] << " " <<a_rectB->m_max[1]<<endl;
+  for(int index=0; index < NUMDIMS; ++index)
+  {
+    if (a_rectA->m_min[index] > a_rectB->m_min[index] ||
+        a_rectA->m_max[index] < a_rectB->m_max[index])
+    {
+      return false;
+    }
+  }
+  //cout<<"[Rtree log:] pass recB:"<< a_rectB->m_min[0]<<" "<< a_rectB->m_min[1] << " "<<a_rectB->m_max[0] << " "<< a_rectB->m_max[1]<<endl;
+  return true;
+}
+
 
 // Add a node to the reinsertion list.  All its branches will later
 // be reinserted into the index structure.
@@ -1578,6 +1627,53 @@ bool RTREE_QUAL::SearchOverlap(Node* a_node, Rect* a_rect, int& a_foundCount, t_
       {
         DATATYPE& id = a_node->m_branch[index].m_data;
         
+
+        // NOTE: There are different ways to return results.  Here's where to modify
+        if(a_resultCallback && a_resultCallback(id, a_context))
+        {
+            ++a_foundCount;
+        }
+
+      }
+    }
+  }
+
+  return true; // Continue searching
+}
+
+// Search in an index tree or subtree for all data retangles that overlap the argument rectangle.
+RTREE_TEMPLATE
+bool RTREE_QUAL::SearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context)
+{
+  ASSERT(a_node);
+  ASSERT(a_node->m_level >= 0);
+  ASSERT(a_rect);
+  //cout<<"[Rtree log:] search contain!"<<endl;
+  if(a_node->IsInternalNode())
+  {
+    // This is an internal node in the tree
+    for(int index=0; index < a_node->m_count; ++index)
+    {
+      if(Overlap(a_rect, &a_node->m_branch[index].m_rect))
+      {
+        if(!SearchContain(a_node->m_branch[index].m_child, a_rect, a_foundCount, a_resultCallback, a_context))
+        {
+          // The callback indicated to stop searching
+          return false;
+        }
+      }
+    }
+  }
+  else
+  {
+    // This is a leaf node
+    for(int index=0; index < a_node->m_count; ++index)
+    {
+      if(Contain(a_rect, &a_node->m_branch[index].m_rect))
+      {
+        DATATYPE& id = a_node->m_branch[index].m_data;
+        Rect* a_rectB = &(a_node->m_branch[index].m_rect);
+        //cout<<"[Rtree log:] contains recB:"<< a_rectB->m_min[0]<<" "<< a_rectB->m_min[1] << " "<<a_rectB->m_max[0] << " "<< a_rectB->m_max[1]<<endl;
 
         // NOTE: There are different ways to return results.  Here's where to modify
         if(a_resultCallback && a_resultCallback(id, a_context))
