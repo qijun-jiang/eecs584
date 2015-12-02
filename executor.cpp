@@ -40,7 +40,7 @@ int Executor::execute(string query_string){
 
     if (parsed_query.query_type == "select"){
         void *void_table_name = static_cast<void*>(&table_name);
-        int nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.min, MySearchCallback, void_table_name);
+        int nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.max, MySearchCallback, void_table_name);
         cout << "Search resulted in " << nhits << " hits\n";
         return nhits;
     }
