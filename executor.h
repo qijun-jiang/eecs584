@@ -5,7 +5,7 @@
 #include <math.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <parse.h>
+#include <parser.h>
 
 using namespace std;
 
