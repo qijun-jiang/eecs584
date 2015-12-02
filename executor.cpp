@@ -2,6 +2,13 @@
 #include "executor.h"
 using namespace std;
 
+bool MySearchCallback(ValueType id, void* arg)
+{
+  std::string *table_name = static_cast<std::string*>(arg);
+  cout << "Hit data rect " << id << " " << *table_name << "\n";
+  return true; // keep going
+}
+
 
 int Executor::execute(string query_string){
 // create table
@@ -24,7 +31,9 @@ int Executor::execute(string query_string){
     }
 
     if (parsed_query.query_type == "query"){
-        
+        void *void_table_name = static_cast<void*>(&table_name);
+        int nhits = tree.Search(parsed_query.rect.min, parsed_query.rect.min, MySearchCallback, void_table_name);
+        cout << "Search resulted in " << nhits << " hits\n";
     }
 
     if (parsed_query.query_type == "drop table"){
