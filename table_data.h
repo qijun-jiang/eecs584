@@ -31,7 +31,26 @@ struct Rect {
     row_id counter
     rtree index
     string map maps string to double( string counter)
+
+example usage:
+
+    extern map<string, TableData*> table_map;
+
+    string table_name;
+    TableData* tb_data;
+    if (table_map.find() == table_map.end()){
+        table_map[table_name] = new TableData(table_name);
+    }
+    tb_data = table_map[table_name];
+
+    string attr_name;
+    if (tb_data->string_map_.find(attr_name) == tb_data->string_map_.end()){
+        tb_data->string_map_[attr_name] = (tb_data->string_counter_)++;
+    }
+    double attr_number = tb_data->string_map_[attr_name];
+
 */
+
 class TableData{
     TableData(string input_table_name_){
         table_name_ = input_table_name_;
