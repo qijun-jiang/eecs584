@@ -11,6 +11,7 @@ using namespace std;
 
 
 class Executor{
+    Parser query_parser_;
   public:
     /* 
     return -1 for error,

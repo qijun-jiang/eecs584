@@ -14,6 +14,8 @@
 
 using namespace std;
 
+extern map<string, TableData*> table_map;
+
 // typedef pair<double, double> Point;
 // typedef vector<Point> Polygon;
 
