@@ -18,20 +18,20 @@ using namespace std;
 // typedef vector<Point> Polygon;
 
 struct ParserResult {
-	string query_type;
-	string table_name;
-	Rect rect;
-	char spatial_type;
-	char cmp_op;
-	double attr_value;
+    string query_type;
+    string table_name;
+    Rect rect;
+    char spatial_type;
+    char cmp_op;
+    double attr_value;
 
-	ParserResult() {}
+    ParserResult() {}
 };
 
 class Parser {
 
 public:
-	ParserResult Parse(string query);
+    ParserResult Parse(string query);
 
 };
 
