@@ -36,7 +36,7 @@ ParserResult Parser::Parse(string query) {
     int i = 0;
     while (iss >> tmp) {
         s_list.push_back(tmp);
-        cout << i << " " << tmp << endl;
+        // cout << i << " " << tmp << endl;
         i++;
     }
 
