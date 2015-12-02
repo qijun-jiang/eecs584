@@ -20,8 +20,8 @@ int Executor::execute(string query_string){
     if (table_map.find(table_name) == table_map.end()){
         table_map[table_name] = new TableData(table_name);
     }
-    const TableData& tb_data = *(table_map[table_name]);
-    MyTree& rtree = tb_data->rtree_;
+    TableData& tb_data = *(table_map[table_name]);
+    MyTree& rtree = tb_data.rtree_;
 
     if (parsed_query.query_type == "insert"){
         int row_id = tb_data.row_id_++;
@@ -32,7 +32,7 @@ int Executor::execute(string query_string){
 
     if (parsed_query.query_type == "query"){
         void *void_table_name = static_cast<void*>(&table_name);
-        int nhits = tree.Search(parsed_query.rect.min, parsed_query.rect.min, MySearchCallback, void_table_name);
+        int nhits = rtree.Search(parsed_query.rect.min, parsed_query.rect.min, MySearchCallback, void_table_name);
         cout << "Search resulted in " << nhits << " hits\n";
     }
 
