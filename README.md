@@ -17,9 +17,11 @@ ALTER TABLE gis ADD SPATIAL INDEX(g);
 #compile and execution
 
 server compile command: g++ server.cpp executor.cpp parser.cpp -o server
+
 server execute command: ./server
 
 client compile commnad: g++ client.cpp -o client
+
 client execute command: ./client -s <hostname:port> -q <useless opt, whatever string>
 
 # project design:
