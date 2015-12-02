@@ -26,8 +26,16 @@ double get_double(string table_name, string attr_name) {
 }
 
 
-void Parser::print_parser_result(ParserResult result) {
-    return
+void print_parser_result(ParserResult result) {
+    cout << "query type: " << result.query_type << endl;
+    cout << "table name: " << result.table_name << endl;
+    cout << "rect min: " << result.rect.min[0] << " " << result.rect.min[1] << endl;
+    cout << "rect max: " << result.rect.max[0] << " " << result.rect.max[1] << endl;
+    cout << "spatial type: " << result.spatial_type << endl;
+    cout << "compare operator: " << result.cmp_op << endl;
+    cout << "attribute value: " << result.attr_value << endl;
+
+
 }
 
 //
@@ -88,15 +96,15 @@ ParserResult Parser::Parse(string query) {
     return result;
 }
 
-// int main() {
-//     Parser parser;
-//     parser.Parse("SELECT COUNT(*) FROM gis1 WHERE ST_CONTAINS (PolygonFromText('POLYGON(( 24585.6 8324.77, 34585.6 8324.77, 34585.6 18324.8, 24585.6 18324.8, 24585.6 8324.77 ))'), g) AND color = 'red';");
-//     parser.Parse("INSERT INTO gis1 VALUES (PolygonFromText('POLYGON(( 89031.9 55459.7, 89147.3 55459.7, 89147.3 55575.1, 89031.9 55575.1, 89031.9 55459.7 ))'), 'blue');");
-
-//     // for (auto it = table_map["gis1"]->string_map_.begin(); it != table_map["gis1"]->string_map_.end(); it++) {
-//     //  cout << it->first << " " << it->second << endl;
-//     // }
-// }
+int main() {
+    Parser parser;
+    ParserResult r = parser.Parse("SELECT COUNT(*) FROM gis1 WHERE ST_CONTAINS (PolygonFromText('POLYGON(( 24585.6 8324.77, 34585.6 8324.77, 34585.6 18324.8, 24585.6 18324.8, 24585.6 8324.77 ))'), g) AND color = 'red';");
+    // parser.Parse("INSERT INTO gis1 VALUES (PolygonFromText('POLYGON(( 89031.9 55459.7, 89147.3 55459.7, 89147.3 55575.1, 89031.9 55575.1, 89031.9 55459.7 ))'), 'blue');");
+    print_parser_result(r);
+    // for (auto it = table_map["gis1"]->string_map_.begin(); it != table_map["gis1"]->string_map_.end(); it++) {
+    //  cout << it->first << " " << it->second << endl;
+    // }
+}
 
 
 
