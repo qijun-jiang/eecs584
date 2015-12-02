@@ -54,13 +54,12 @@ example usage:
 */
 
 class TableData{
+  public:
     TableData(string input_table_name_){
         table_name_ = input_table_name_;
         row_id_ = 0;
         string_counter_ = 0;
     }
-
-  public:
     string table_name_;
     vector<Rect> rect_in_row_;
     vector<double> attribute_in_row_;
