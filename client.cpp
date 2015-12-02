@@ -18,7 +18,7 @@ int sd;                   /* socket descriptor */
 
 void client_usage(char *progname)
 {
-  fprintf(stderr, "Usage: %s -s <server>:<port> -q <query>\n",
+  fprintf(stderr, "Usage: %s -s <server>:<port> -f <search_file_name>\n",
           progname); 
   exit(1);
 }
@@ -30,7 +30,7 @@ void client_usage(char *progname)
  * "*imagename" : the name of the image to search for
  * "*vers"      : the version used for query packet
  */
-int client_args(int argc, char *argv[], char **sname, u_short *port, char *query)
+int client_args(int argc, char *argv[], char **sname, u_short *port, char *fname)
 {
   char c, *p;
   extern char *optarg;
@@ -39,7 +39,7 @@ int client_args(int argc, char *argv[], char **sname, u_short *port, char *query
     return (1);
   }
   
-  while ((c = getopt(argc, argv, "s:q:")) != EOF) {
+  while ((c = getopt(argc, argv, "s:f:")) != EOF) {
     switch (c) {
     case 's':
       for (p = optarg+strlen(optarg)-1;      // point to last character of addr:port arg
@@ -50,8 +50,8 @@ int client_args(int argc, char *argv[], char **sname, u_short *port, char *query
       *port = htons((u_short) atoi(p)); // always stored in network byte order
       *sname = optarg;
       break;
-    case 'q':
-      memcpy(query, optarg, strlen(optarg));
+    case 'f':
+      memcpy(fname, optarg, strlen(optarg));
       break;
     default:
       return(1);
@@ -136,17 +136,18 @@ int main(int argc, char *argv[])
   u_short port;
   clock_t startTime;
   clock_t endTime;
+  char search_file_name[100] = { 0 };
   char query[QUERY_MAXLENGTH] = { 0 };
   char response[RESPONSE_MAXLENGTH] = { 0 };
 
   /* parse args */
-  if (client_args(argc, argv, &server_name, &port, query)) {
+  if (client_args(argc, argv, &server_name, &port, search_file_name)) {
     client_usage(argv[0]);
   }
 
   client_sockinit(server_name, port); 
 
-  std::ifstream input_file("sql/search_test_int.sql");
+  std::ifstream input_file(search_file_name);
   if (input_file.is_open()) {
 
     /* set the start time */
