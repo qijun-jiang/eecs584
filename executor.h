@@ -5,12 +5,19 @@
 #include <math.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <parse.h>
+
+using namespace std;
 
 
 class Executor{
-
-
-
+  public:
+    /* 
+    return -1 for error,
+            0 for success,
+            other value for select result;
+    */
+    int execute(string query_string);
 
 };
 
