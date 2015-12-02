@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include "RTree.h"
+#include <string>
 
 using namespace std;
 
@@ -46,7 +47,8 @@ Rect search_rect(6.0, 4.0, 10, 6.5); // search will find above rects that this o
 
 bool MySearchCallback(ValueType id, void* arg)
 {
-  cout << "Hit data rect " << id << "\n";
+  std::string *sp = static_cast<std::string*>(arg);
+  cout << "Hit data rect " << id << " " << *sp << "\n";
   return true; // keep going
 }
 
@@ -63,8 +65,8 @@ int main()
   {
     tree.Insert(rects[i].min, rects[i].max, i); // Note, all values including zero are fine in this version
   }
-
-  nhits = tree.Search(search_rect.min, search_rect.max, MySearchCallback, NULL);
+  void *vp = static_cast<void*>(new std::string("table1"));
+  nhits = tree.Search(search_rect.min, search_rect.max, MySearchCallback, vp);
 
   cout << "Search resulted in " << nhits << " hits\n";
 
