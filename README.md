@@ -22,7 +22,7 @@ server execute command: ./server
 
 client compile commnad: g++ client.cpp -o client
 
-client execute command: ./client -s <hostname:port> -q <useless opt, whatever string>
+client execute command: ./client -s [hostname:port] -q [useless opt, whatever string]
 
 # project design:
 
