@@ -16,13 +16,17 @@ ALTER TABLE gis ADD SPATIAL INDEX(g);
 
 #compile and execution
 
-server compile command: g++ server.cpp executor.cpp parser.cpp -o server
+[!!!Attention!!!!]
+DON'T FORGET to change the load file name in server.cpp, line 148
+- char load_file[50] = "sql/load_10000000x100x0.25.sql\0";
+
+server compile command: g++ server.cpp executor.cpp parser.cpp -o server -fopenmp -std=c++11
 
 server execute command: ./server
 
-client compile commnad: g++ client.cpp -o client
+client compile commnad: g++ client.cpp -o client -std=c++11
 
-client execute command: ./client -s [hostname:port] -q [useless opt, whatever string]
+client execute command: ./client -s beyster111.engin.umich.edu:17284[hostname:portname, from server] -q sql/search_10000000x100x0.25.sql[search file containing the select queries, locate in folder sql/]
 
 # project design:
 
