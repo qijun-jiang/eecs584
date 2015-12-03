@@ -31,10 +31,10 @@ Polygon randSearchBox(double side) {
 	Polygon p;
 	double x = unif_size(gen);
 	double y = unif_size(gen);
-	p.push_back(Point(x-side/20, y-side/20));
-	p.push_back(Point(x+side/20, y-side/20));
-	p.push_back(Point(x+side/20, y+side/20));
-	p.push_back(Point(x-side/20, y+side/20));
+	p.push_back(Point(x-side/10, y-side/16));
+	p.push_back(Point(x+side/10, y-side/16));
+	p.push_back(Point(x+side/10, y+side/16));
+	p.push_back(Point(x-side/10, y+side/16));
 	return p;
 }
 
@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 	vector<Polygon> poly_list;
 	int n_insert = 10000000;
 	
-
+/*
 	string filename = "sql/load.sql";
 	ofstream fs(filename);
 	fs << "DROP TABLE gis1;\n";
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 		fs << ";\n";
 	}
 	fs.close();
-
+*/
 	int n_search = 100;
 	ofstream fs1("sql/search.sql");
 	for (int i = 0; i < n_search; i++) {
