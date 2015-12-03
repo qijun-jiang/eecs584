@@ -42,10 +42,10 @@ Polygon randSearchBox(double side) {
 int main(int argc, char** argv) {
 	
 	vector<Polygon> poly_list;
-	int n_insert = 500000;
-	int n_search = 5;
+	int n_insert = 10000000;
+	int n_search = 100;
 
-	string filename = "sql/load_" + std::to_string(n_insert) + "x" + std::to_string(n_search) + ".sql";
+	string filename = "sql/load_" + std::to_string(n_insert) + "x" + std::to_string(n_search) + "x0.25" + ".sql";
 	ofstream fs(filename);
 	fs << "DROP TABLE gis1;\n";
 	fs << "CREATE TABLE gis1 (g GEOMETRY NOT NULL, color VARCHAR(12), SPATIAL INDEX(g)) ENGINE=MyISAM;\n";
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 	}
 	fs.close();
 
-	ofstream fs1("sql/search_" + std::to_string(n_insert) + "x" + std::to_string(n_search) + ".sql");
+	ofstream fs1("sql/search_" + std::to_string(n_insert) + "x" + std::to_string(n_search) + "x0.25" + ".sql");
 	for (int i = 0; i < n_search; i++) {
 		Polygon p = randSearchBox(100000.0);
 		fs1 << "SELECT COUNT(*) FROM gis1 WHERE ST_CONTAINS (";
