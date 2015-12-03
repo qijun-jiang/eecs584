@@ -365,6 +365,7 @@ protected:
   bool SearchOverlap(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size);
   bool SearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size);
   bool ParallelSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size);
+  bool P2PSearchContain(Node* cur_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size)
   void RemoveAllRec(Node* a_node);
   void Reset();
   void CountRec(Node* a_node, int& a_count);
@@ -1826,73 +1827,116 @@ bool RTREE_QUAL::ParallelSearchContain(Node* a_node, Rect* a_rect, int& a_foundC
 }
 
 
-/*
-bool RTREE_QUAL::P2PSearchContain(Node* cur_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size)
+
+bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size)
 {
   ASSERT(cur_node);
   ASSERT(cur_node->m_level >= 0);
   ASSERT(a_rect);
-  //cout<<"[Rtree log:] search contain!"<<endl;
-
+  //cout<<"[Rtree log:] P2PSearchContain!"<<endl;
+  omp_lock_t lock_global;
+  vector<omp_lock_t> plocks(128);
+  vector<bool> pflags(128);
+  vector<vector<Node*>*> pstacks(128);
+  int live_worker = 0;
   //DFS using stack
    
   int th_id, nthreads;
-  #pragma omp parallel private(th_id) shared(nthreads)
+  #pragma omp parallel shared(plocks, pflags, pstacks, live_worker, a_node, a_rect, a_resultCallback, a_context, a_context_size, a_foundCount)
   {
-    th_id = omp_get_thread_num();
-    #pragma omp critical
-    {
-      cout << "Hello World from thread " << th_id << '\n' ;
-    }
-    #pragma omp barrier
+    int nthreads = omp_get_num_threads();
+    int tid = omp_get_thread_num();
+    bool live_thread = false;
+    vector <Node*> local_stack;
+    Node* cur_node;
+
+    int cur_foundCount = 0;
+    int cur_context_size = a_context_size;
+    Rect* cur_rect = new Rect();
+    *cur_rect = *a_rect;
+    
+    t_resultCallback cur_resultCallback = a_resultCallback;
+    void* cur_context = malloc(a_context_size*sizeof(char));
+    memcpy(cur_context, a_context, a_context_size);
 
     #pragma omp master
     {
-      nthreads = omp_get_num_threads();
-      cout << "There are " << nthreads << " threads\n";
+      // Fill the plocks
+      for (int i=0; i<nthreads; i++){
+        pflags[i] = false;
+        omp_lock_t* init_lock = new omp_lock_t;
+        plocks[i] = init_lock;
+        pstacks[i] = &local_stack;
+      }
+      // Put root* in thread_0
+      pstacks[0]->push_back(a_node);
+      cout<<"[Rtree log:] global_queue size:("<< global_queue.size() <<")"<<endl;
     }
-  }
+    #pragma omp barrier
+    
+    //
+      //DFS using stack
+    while (1) {
 
-  vector <Node*> local_stack;
-  local_stack.push_back(cur_node);
-  Node* a_node;
-  while (1) {
-    if (local_stack.empty()) {
-      break;
-    }
-    a_node = local_stack.back();
-    local_stack.pop_back();
-    if (a_node->IsInternalNode()){
-      // Expand
-      for(int index=0; index < a_node->m_count; ++index){
-        if(Overlap(a_rect, &a_node->m_branch[index].m_rect)){
-          local_stack.push_back(a_node->m_branch[index].m_child);
+      if (local_stack.empty()) {
+        continue;
+      } else {
+        if (!live_thread){
+            live_thread = true;
+            omp_set_lock(&lock_global);
+            live_worker++;
+            omp_unset_lock(&lock_global);
         }
       }
 
-    } else {
-      // This is a leaf node
-      for(int index=0; index < a_node->m_count; ++index){
-        if(Contain(a_rect, &a_node->m_branch[index].m_rect)){
-          DATATYPE& id = a_node->m_branch[index].m_data;
-          Rect* a_rectB = &(a_node->m_branch[index].m_rect);
-          //cout<<"[Rtree log:] contains recB:"<< a_rectB->m_min[0]<<" "<< a_rectB->m_min[1] << " "<<a_rectB->m_max[0] << " "<< a_rectB->m_max[1]<<endl;
+      int local_counter = 0;
+      local_counter++;
+      // Return back to global queue
+      if (local_counter == 2000){
+        local_counter=0;
+      }
 
-          // NOTE: There are different ways to return results.  Here's where to modify
-          if(a_resultCallback && a_resultCallback(id, a_context)){
-              ++a_foundCount;
+      // Local search
+      cur_node = local_stack.back();
+      local_stack.pop_back();
+      if (cur_node->IsInternalNode()){
+        // Expand
+        for(int index=0; index < cur_node->m_count; ++index){
+          if(Overlap(cur_rect, &cur_node->m_branch[index].m_rect)){
+            local_stack.push_back(cur_node->m_branch[index].m_child);
           }
         }
+
+      } else {
+        // This is a leaf node
+        for(int index=0; index < cur_node->m_count; ++index){
+          if(Contain(cur_rect, &cur_node->m_branch[index].m_rect)){
+            DATATYPE& id = cur_node->m_branch[index].m_data;
+            Rect* cur_rectB = &(cur_node->m_branch[index].m_rect);
+            //cout<<"[Rtree log:] contains recB:"<< a_rectB->m_min[0]<<" "<< a_rectB->m_min[1] << " "<<a_rectB->m_max[0] << " "<< a_rectB->m_max[1]<<endl;
+
+            // NOTE: There are different ways to return results.  Here's where to modify
+            if(cur_resultCallback && cur_resultCallback(id, cur_context)){
+                ++cur_foundCount;
+            }
+          }
+        }
+        // End checking leaf node
       }
-      // End checking leaf node
+
     }
 
-
+    omp_set_lock(&lock_count);
+      a_foundCount += cur_foundCount;
+    omp_unset_lock(&lock_count);
+    delete cur_rect;
+    free(cur_context);
+    #pragma omp barrier
+// end parallel
   }
 
   return true; // Continue searching
 }
-*/
 
 
 #undef RTREE_TEMPLATE
