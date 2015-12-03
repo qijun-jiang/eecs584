@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
 
     /* set the end time */
     gettimeofday(&endTime, NULL);
-    fprintf(stderr, "[client log:] time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);
+    fprintf(stderr, "[client log:] end time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);
     
     /* send the termination to server to close the connection */
     client_sendtermination();

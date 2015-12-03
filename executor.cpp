@@ -74,6 +74,7 @@ int Executor::execute(string query_string){
 
     // cout<< "[exe log:] query_type:" << parsed_query.query_type <<endl;
 
+
     if (parsed_query.query_type == "insert"){
         int row_id = tb_data.row_id_++;
         tb_data.rect_in_row_.push_back(parsed_query.rect);
@@ -82,6 +83,7 @@ int Executor::execute(string query_string){
     }
 
     if (parsed_query.query_type == "select"){
+        //print_parser_result(parsed_query);
         CompareInfo compare_info(table_name, parsed_query.attr_value);
         void *vp = static_cast<void*>(&compare_info);
         int nhits;
