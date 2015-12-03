@@ -8,7 +8,7 @@
 #include <math.h>
 #include <assert.h>
 #include <stdlib.h>
-
+#include <omp.h>
 #include <algorithm>
 #include <iostream>
 
@@ -1698,10 +1698,29 @@ bool RTREE_QUAL::ParallelSearchContain(Node* cur_node, Rect* a_rect, int& a_foun
   ASSERT(cur_node->m_level >= 0);
   ASSERT(a_rect);
   //cout<<"[Rtree log:] search contain!"<<endl;
+
+  //DFS using stack
+   
+  int th_id, nthreads;
+  #pragma omp parallel private(th_id) shared(nthreads)
+  {
+    th_id = omp_get_thread_num();
+    #pragma omp critical
+    {
+      cout << "Hello World from thread " << th_id << '\n' ;
+    }
+    #pragma omp barrier
+
+    #pragma omp master
+    {
+      nthreads = omp_get_num_threads();
+      cout << "There are " << nthreads << " threads\n";
+    }
+  }
+
   vector <Node*> local_stack;
   local_stack.push_back(cur_node);
   Node* a_node;
-  //DFS using stack
   while (1) {
     if (local_stack.empty()) {
       break;
@@ -1740,6 +1759,73 @@ bool RTREE_QUAL::ParallelSearchContain(Node* cur_node, Rect* a_rect, int& a_foun
 }
 
 
+/*
+bool RTREE_QUAL::P2PSearchContain(Node* cur_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size)
+{
+  ASSERT(cur_node);
+  ASSERT(cur_node->m_level >= 0);
+  ASSERT(a_rect);
+  //cout<<"[Rtree log:] search contain!"<<endl;
+
+  //DFS using stack
+   
+  int th_id, nthreads;
+  #pragma omp parallel private(th_id) shared(nthreads)
+  {
+    th_id = omp_get_thread_num();
+    #pragma omp critical
+    {
+      cout << "Hello World from thread " << th_id << '\n' ;
+    }
+    #pragma omp barrier
+
+    #pragma omp master
+    {
+      nthreads = omp_get_num_threads();
+      cout << "There are " << nthreads << " threads\n";
+    }
+  }
+
+  vector <Node*> local_stack;
+  local_stack.push_back(cur_node);
+  Node* a_node;
+  while (1) {
+    if (local_stack.empty()) {
+      break;
+    }
+    a_node = local_stack.back();
+    local_stack.pop_back();
+    if (a_node->IsInternalNode()){
+      // Expand
+      for(int index=0; index < a_node->m_count; ++index){
+        if(Overlap(a_rect, &a_node->m_branch[index].m_rect)){
+          local_stack.push_back(a_node->m_branch[index].m_child);
+        }
+      }
+
+    } else {
+      // This is a leaf node
+      for(int index=0; index < a_node->m_count; ++index){
+        if(Contain(a_rect, &a_node->m_branch[index].m_rect)){
+          DATATYPE& id = a_node->m_branch[index].m_data;
+          Rect* a_rectB = &(a_node->m_branch[index].m_rect);
+          //cout<<"[Rtree log:] contains recB:"<< a_rectB->m_min[0]<<" "<< a_rectB->m_min[1] << " "<<a_rectB->m_max[0] << " "<< a_rectB->m_max[1]<<endl;
+
+          // NOTE: There are different ways to return results.  Here's where to modify
+          if(a_resultCallback && a_resultCallback(id, a_context)){
+              ++a_foundCount;
+          }
+        }
+      }
+      // End checking leaf node
+    }
+
+
+  }
+
+  return true; // Continue searching
+}
+*/
 
 
 #undef RTREE_TEMPLATE
