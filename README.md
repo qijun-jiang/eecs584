@@ -1,5 +1,20 @@
 # eecs584
 
+#compile and execution
+
+- server compile command: g++ server.cpp executor.cpp parser.cpp -o server -fopenmp -std=c++11
+
+- server execute command: ./server -l load_file
+
+Example: ./server -l sql/load_test_int.sql
+
+- client compile commnad: g++ client.cpp -o client -std=c++11
+
+- client execute command: ./client -s hostname:portname -q search_file
+
+Example: ./client -s beyster111.engin.umich.edu:17284 -q sql/search_test_int.sql
+
+#Mysql source code load
 output: load.sql, search.sql
 
 usage: mysql -u root 584test -p
@@ -13,20 +28,6 @@ source /home/zhizhong/Desktop/eecs584/eecs584/load.sql
 
 create index:
 ALTER TABLE gis ADD SPATIAL INDEX(g);
-
-#compile and execution
-
-[!!!Attention!!!!]
-DON'T FORGET to change the load file name in server.cpp, line 148
-- char load_file[50] = "sql/load_10000000x100x0.25.sql\0";
-
-server compile command: g++ server.cpp executor.cpp parser.cpp -o server -fopenmp -std=c++11
-
-server execute command: ./server
-
-client compile commnad: g++ client.cpp -o client -std=c++11
-
-client execute command: ./client -s beyster111.engin.umich.edu:17284[hostname:portname, from server] -q sql/search_10000000x100x0.25.sql[search file containing the select queries, locate in folder sql/]
 
 # project design:
 
@@ -67,7 +68,7 @@ drop table, create table, just change the table list,
 
 insert: just insert the rectangle
 
-query:	
+query:
 1. based on spatial function and compare operator, pass two function pointer to rtree class, and collect result.
 
 execution mode: 1.parallel check 2nd attribute in the tree search process. 2.store all row id into a data structure and sort afterwards, parallelize scan process again.
