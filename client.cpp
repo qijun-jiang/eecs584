@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
   struct timeval startTime;
   struct timeval endTime;
   char query_file_name[100] = { 0 };
-  std::string result_file_name = "sql/result_";
+  std::string result_file_name;
   char query[QUERY_MAXLENGTH] = { 0 };
   char response[RESPONSE_MAXLENGTH] = { 0 };
   int counter = 0;
@@ -151,7 +151,10 @@ int main(int argc, char *argv[])
 
   client_sockinit(server_name, port); 
 
-  result_file_name += query_file_name;
+  result_file_name = query_file_name;
+  int index = result_file_name.find('.');
+  result_file_name.insert(index, "_result");
+  fprintf(stderr, "result file name = %s\n", result_file_name.c_str());
   std::ifstream input_file(query_file_name);
   std::ofstream output_file(result_file_name);
   if (input_file.is_open()) {

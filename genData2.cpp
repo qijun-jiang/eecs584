@@ -31,10 +31,10 @@ Polygon randSearchBox(double side) {
 	Polygon p;
 	double x = unif_size(gen);
 	double y = unif_size(gen);
-	p.push_back(Point(x-side/10, y-side/10));
-	p.push_back(Point(x+side/10, y-side/10));
-	p.push_back(Point(x+side/10, y+side/10));
-	p.push_back(Point(x-side/10, y+side/10));
+	p.push_back(Point(x-side/20, y-side/20));
+	p.push_back(Point(x+side/20, y-side/20));
+	p.push_back(Point(x+side/20, y+side/20));
+	p.push_back(Point(x-side/20, y+side/20));
 	return p;
 }
 
@@ -42,7 +42,7 @@ Polygon randSearchBox(double side) {
 int main(int argc, char** argv) {
 	
 	vector<Polygon> poly_list;
-	int n_insert = 10000;
+	int n_insert = 10000000;
 	
 
 	string filename = "sql/load.sql";
