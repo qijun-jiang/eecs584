@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 
   result_file_name = query_file_name;
   int index = result_file_name.find('.');
-  result_file_name.insert(index, "_result");
+  result_file_name.insert(index, "_result_serial");
   fprintf(stderr, "result file name = %s\n", result_file_name.c_str());
   std::ifstream input_file(query_file_name);
   std::ofstream output_file(result_file_name);

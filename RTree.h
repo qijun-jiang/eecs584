@@ -575,7 +575,7 @@ int RTREE_QUAL::SearchContain(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_ma
   // NOTE: May want to return search result another way, perhaps returning the number of found elements here.
 
   int foundCount = 0;
-  ParallelSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+  SearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
 
   return foundCount;
 }
