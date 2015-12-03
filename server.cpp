@@ -16,6 +16,43 @@
 
 using namespace std;
 
+void server_usage(char *progname)
+{
+  fprintf(stderr, "Usage: %s -l <load_file>\n",
+          progname); 
+  exit(1);
+}
+
+/*
+ * client_args: parses command line args.
+ * "*sname"     : the server's name
+ * "port"       : the port to connect at server, in network byte order. 
+ * "*imagename" : the name of the image to search for
+ * "*vers"      : the version used for query packet
+ */
+int server_args(int argc, char *argv[], char *fname)
+{
+  char c, *p;
+  extern char *optarg;
+
+  if (argc < 5) {
+    return (1);
+  }
+  
+  while ((c = getopt(argc, argv, "l:")) != EOF) {
+    switch (c) {
+    case 'l':
+      memcpy(fname, optarg, strlen(optarg));
+      break;
+    default:
+      return(1);
+      break;
+    }
+  }
+
+  return (0);
+}
+
 /*
  * server_sockinit: sets up a TCP socket listening for connection.
  * Let the call to bind() assign an ephemeral port to this listening socket.
@@ -145,10 +182,16 @@ int main(int argc, char *argv[])
   char query[QUERY_MAXLENGTH] = { 0 };
   char response[RESPONSE_MAXLENGTH] = "response\0";
   char termination[RESPONSE_MAXLENGTH] = "terminate\0";
-  char load_file[50] = "sql/load_10000000x100x0.25.sql\0";
+  char load_file_name[100] = { 0 };
+  //char load_file[50] = "sql/load_10000000x100x0.25.sql\0";
   Executor query_executor;
 
-  load_data(load_file, query_executor);
+  /* parse args */
+  if (server_args(argc, argv, load_file_name)) {
+    server_usage(argv[0]);
+  }
+
+  load_data(load_file_name, query_executor);
 
   sd = server_sockinit();
   while (1) {
