@@ -86,16 +86,16 @@ int Executor::execute(string query_string){
         void *vp = static_cast<void*>(&compare_info);
         int nhits;
         if (parsed_query.cmp_op == '?'){
-            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, NoCompareCallback, vp);
+            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, NoCompareCallback, vp, sizeof(CompareInfo));
         }
         if (parsed_query.cmp_op == '='){
-            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, EqualCallback, vp);
+            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, EqualCallback, vp, sizeof(CompareInfo));
         }
         if (parsed_query.cmp_op == '>'){
-            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, GreaterCallback, vp);
+            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, GreaterCallback, vp, sizeof(CompareInfo));
         }
         if (parsed_query.cmp_op == '<'){
-            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, LessCallback, vp);
+            nhits = rtree.SearchContain(parsed_query.rect.min, parsed_query.rect.max, LessCallback, vp, sizeof(CompareInfo));
         }
         cout << "Search resulted in " << nhits << " hits\n";
         return nhits;

@@ -94,7 +94,7 @@ ParserResult Parser::Parse(string query) {
         s_list[22].erase(s_list[22].begin());
         result.attr_value = get_double(result.table_name, s_list[22]);
     }
-    //print_parser_result(result);
+    print_parser_result(result);
     return result;
 }
 

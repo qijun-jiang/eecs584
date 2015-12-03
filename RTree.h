@@ -96,8 +96,8 @@ public:
   /// \param a_resultCallback Callback function to return result.  Callback should return 'true' to continue searching
   /// \param a_context User context to pass as parameter to a_resultCallback
   /// \return Returns the number of entries found
-  int SearchOverlap(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS], t_resultCallback a_resultCallback, void* a_context);
-  int SearchContain(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS], t_resultCallback a_resultCallback, void* a_context);
+  int SearchOverlap(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS], t_resultCallback a_resultCallback, void* a_context, int a_context_size);
+  int SearchContain(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS], t_resultCallback a_resultCallback, void* a_context, int a_context_size);
   /// Remove all entries from tree
   void RemoveAll();
 
@@ -359,8 +359,9 @@ protected:
   bool Overlap(Rect* a_rectA, Rect* a_rectB);
   bool Contain(Rect* a_rectA, Rect* a_rectB);
   void ReInsert(Node* a_node, ListNode** a_listNode);
-  bool SearchOverlap(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context);
-  bool SearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context);
+  bool SearchOverlap(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size);
+  bool SearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size);
+  bool ParallelSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size);
   void RemoveAllRec(Node* a_node);
   void Reset();
   void CountRec(Node* a_node, int& a_count);
@@ -528,7 +529,7 @@ void RTREE_QUAL::Remove(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMD
 
 
 RTREE_TEMPLATE
-int RTREE_QUAL::SearchOverlap(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS], t_resultCallback a_resultCallback, void* a_context)
+int RTREE_QUAL::SearchOverlap(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS], t_resultCallback a_resultCallback, void* a_context, int a_context_size)
 {
 #ifdef _DEBUG
   for(int index=0; index<NUMDIMS; ++index)
@@ -548,13 +549,13 @@ int RTREE_QUAL::SearchOverlap(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_ma
   // NOTE: May want to return search result another way, perhaps returning the number of found elements here.
 
   int foundCount = 0;
-  SearchOverlap(m_root, &rect, foundCount, a_resultCallback, a_context);
+  SearchOverlap(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
 
   return foundCount;
 }
 
 RTREE_TEMPLATE
-int RTREE_QUAL::SearchContain(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS], t_resultCallback a_resultCallback, void* a_context)
+int RTREE_QUAL::SearchContain(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_max[NUMDIMS], t_resultCallback a_resultCallback, void* a_context, int a_context_size)
 {
 #ifdef _DEBUG
   for(int index=0; index<NUMDIMS; ++index)
@@ -574,7 +575,7 @@ int RTREE_QUAL::SearchContain(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_ma
   // NOTE: May want to return search result another way, perhaps returning the number of found elements here.
 
   int foundCount = 0;
-  SearchContain(m_root, &rect, foundCount, a_resultCallback, a_context);
+  ParallelSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
 
   return foundCount;
 }
@@ -1567,7 +1568,7 @@ RTREE_TEMPLATE
 bool RTREE_QUAL::Contain(Rect* a_rectA, Rect* a_rectB)
 {
   ASSERT(a_rectA && a_rectB);
-  //cout<<"[Rtree log:] test recB:"<< a_rectB->m_min[0]<<" "<< a_rectB->m_min[1] << " "<<a_rectB->m_max[0] << " " <<a_rectB->m_max[1]<<endl;
+  cout<<"[Rtree log:] test recB:"<< a_rectB->m_min[0]<<" "<< a_rectB->m_min[1] << " "<<a_rectB->m_max[0] << " " <<a_rectB->m_max[1]<<endl;
   for(int index=0; index < NUMDIMS; ++index)
   {
     if (a_rectA->m_min[index] > a_rectB->m_min[index] ||
@@ -1576,7 +1577,7 @@ bool RTREE_QUAL::Contain(Rect* a_rectA, Rect* a_rectB)
       return false;
     }
   }
-  //cout<<"[Rtree log:] pass recB:"<< a_rectB->m_min[0]<<" "<< a_rectB->m_min[1] << " "<<a_rectB->m_max[0] << " "<< a_rectB->m_max[1]<<endl;
+  cout<<"[Rtree log:] pass recB:"<< a_rectB->m_min[0]<<" "<< a_rectB->m_min[1] << " "<<a_rectB->m_max[0] << " "<< a_rectB->m_max[1]<<endl;
   return true;
 }
 
@@ -1597,7 +1598,7 @@ void RTREE_QUAL::ReInsert(Node* a_node, ListNode** a_listNode)
 
 // Search in an index tree or subtree for all data retangles that overlap the argument rectangle.
 RTREE_TEMPLATE
-bool RTREE_QUAL::SearchOverlap(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context)
+bool RTREE_QUAL::SearchOverlap(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size)
 {
   ASSERT(a_node);
   ASSERT(a_node->m_level >= 0);
@@ -1610,7 +1611,7 @@ bool RTREE_QUAL::SearchOverlap(Node* a_node, Rect* a_rect, int& a_foundCount, t_
     {
       if(Overlap(a_rect, &a_node->m_branch[index].m_rect))
       {
-        if(!SearchOverlap(a_node->m_branch[index].m_child, a_rect, a_foundCount, a_resultCallback, a_context))
+        if(!SearchOverlap(a_node->m_branch[index].m_child, a_rect, a_foundCount, a_resultCallback, a_context, a_context_size))
         {
           // The callback indicated to stop searching
           return false;
@@ -1643,7 +1644,7 @@ bool RTREE_QUAL::SearchOverlap(Node* a_node, Rect* a_rect, int& a_foundCount, t_
 
 // Search in an index tree or subtree for all data retangles that overlap the argument rectangle.
 RTREE_TEMPLATE
-bool RTREE_QUAL::SearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context)
+bool RTREE_QUAL::SearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size)
 {
   ASSERT(a_node);
   ASSERT(a_node->m_level >= 0);
@@ -1656,7 +1657,7 @@ bool RTREE_QUAL::SearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_
     {
       if(Overlap(a_rect, &a_node->m_branch[index].m_rect))
       {
-        if(!SearchContain(a_node->m_branch[index].m_child, a_rect, a_foundCount, a_resultCallback, a_context))
+        if(!SearchContain(a_node->m_branch[index].m_child, a_rect, a_foundCount, a_resultCallback, a_context, a_context_size))
         {
           // The callback indicated to stop searching
           return false;
@@ -1687,6 +1688,58 @@ bool RTREE_QUAL::SearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_
 
   return true; // Continue searching
 }
+
+
+// Search in an index tree or subtree for all data retangles that overlap the argument rectangle.
+RTREE_TEMPLATE
+bool RTREE_QUAL::ParallelSearchContain(Node* cur_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size)
+{
+  ASSERT(cur_node);
+  ASSERT(cur_node->m_level >= 0);
+  ASSERT(a_rect);
+  //cout<<"[Rtree log:] search contain!"<<endl;
+  vector <Node*> local_stack;
+  local_stack.push_back(cur_node);
+  Node* a_node;
+  //DFS using stack
+  while (1) {
+    if (local_stack.empty()) {
+      break;
+    }
+    a_node = local_stack.back();
+    local_stack.pop_back();
+    if (a_node->IsInternalNode()){
+      // Expand
+      for(int index=0; index < a_node->m_count; ++index){
+        if(Overlap(a_rect, &a_node->m_branch[index].m_rect)){
+          local_stack.push_back(a_node->m_branch[index].m_child);
+        }
+      }
+
+    } else {
+      // This is a leaf node
+      for(int index=0; index < a_node->m_count; ++index){
+        if(Contain(a_rect, &a_node->m_branch[index].m_rect)){
+          DATATYPE& id = a_node->m_branch[index].m_data;
+          Rect* a_rectB = &(a_node->m_branch[index].m_rect);
+          //cout<<"[Rtree log:] contains recB:"<< a_rectB->m_min[0]<<" "<< a_rectB->m_min[1] << " "<<a_rectB->m_max[0] << " "<< a_rectB->m_max[1]<<endl;
+
+          // NOTE: There are different ways to return results.  Here's where to modify
+          if(a_resultCallback && a_resultCallback(id, a_context)){
+              ++a_foundCount;
+          }
+        }
+      }
+      // End checking leaf node
+    }
+
+
+  }
+
+  return true; // Continue searching
+}
+
+
 
 
 #undef RTREE_TEMPLATE
