@@ -35,7 +35,7 @@ int server_args(int argc, char *argv[], char *fname)
   char c, *p;
   extern char *optarg;
 
-  if (argc < 5) {
+  if (argc < 3) {
     return (1);
   }
   

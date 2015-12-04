@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
       //fprintf(stderr, "query = %s\n", query);
       if (client_sendquery(query)) {
         if (client_recvresponse(response) == 1) {
-        //  fprintf(stderr, "query found: response = %s\n", response);
+          fprintf(stderr, "query found: response = %s\n", response);
           output_file << response << '\n';
         } else {
           fprintf(stderr, "query not found.\n");

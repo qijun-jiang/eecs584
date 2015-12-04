@@ -1848,7 +1848,7 @@ bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount,
   {
     int nthreads = omp_get_num_threads();
     int tid = omp_get_thread_num();
-    bool live_thread = false;
+    bool live_thread = true;
     vector <Node*> local_stack;
     Node* cur_node;
 
@@ -1873,6 +1873,7 @@ bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount,
     #pragma omp master
     {
       // Put root* in thread_0
+      live_worker = nthreads;
       pstacks[0]->push_back(a_node);
     }
     #pragma omp barrier
@@ -1883,41 +1884,44 @@ bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount,
     while (1) {
       //if (tid == 0) cout<<"[Rtree log:]  thread("<< tid <<") local_stack("<<local_stack.size()<<") pflags[tid]("<<pflags[tid]<<") live_worker="<<live_worker<<endl;
       // Check flag
-      bool skip_loop = false;
-      omp_set_lock(plocks[tid]);
-        if (pflags[tid] == true){
-          skip_loop =true;
-        }
-      omp_unset_lock(plocks[tid]);
 
-      if (skip_loop == true){
+      if (pflags[tid] == true){
         // Exit loop when all threads are idle 
         //cout<<"[Rtree log:]  thread("<< tid <<") exit_counter="<<exit_counter<<endl;
+        // omp_set_lock(&lock_global);
+        //     cout<<"[Rtree log:]  thread("<< tid <<") local_stack("<<local_stack.size()<<") pflags[tid]("<<pflags[tid]<<") live_worker="<<live_worker<<endl;
+        //     for (int i=0; i<nthreads ; i++) cout<< pstacks[i]->size() <<" "; cout<<endl;
+        // omp_unset_lock(&lock_global);
         exit_counter++;
-        if (exit_counter == 2){
+        if (exit_counter == 200){
           exit_counter = 0;
+          omp_set_lock(&lock_global);
           if (live_worker == 0){
+            omp_unset_lock(&lock_global);
             break;
           }
+          omp_unset_lock(&lock_global);
         }
         continue;
       }
+
       
 
       // Check empty_local stack
       if (local_stack.empty()) {
-        // Count live_thread
-        if (live_thread){
-            live_thread = false;
-            omp_set_lock(&lock_global);
-            live_worker--;
-            omp_unset_lock(&lock_global);
-        }
 
-        // Set flag
+        
+        omp_set_lock(&lock_global);
         omp_set_lock(plocks[tid]);
+        // Set flag
         pflags[tid] = true;
+
+        // Count live_thread
+        live_thread = false;
+        live_worker--;
         omp_unset_lock(plocks[tid]);
+        omp_unset_lock(&lock_global);
+
         continue;
       } else {
         if (!live_thread){
@@ -1946,8 +1950,8 @@ bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount,
       }
 
       // Split stack to peer
-      num_split = local_stack.size() / (6 + 1);
-      if (num_split > 0){
+      num_split = local_stack.size() / (nthreads + 1);
+      if (num_split > 0 && idle_peers > 0){
 
         i=1;
         while (i<nthreads){
@@ -1963,10 +1967,23 @@ bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount,
             local_stack.erase(local_stack.begin(), local_stack.begin() + num_split);
 
             // Unset peer flag
-            pflags[peer_id] = false;
+            //pflags[peer_id] = false;
           }
           omp_unset_lock(plocks[peer_id]);
 
+        }
+        i = 1;
+        while (i<nthreads){
+          peer_id = tid ^ i;
+
+          if (pflags[peer_id]){
+            omp_set_lock(plocks[peer_id]);
+            if (!pstacks[peer_id]->empty()){
+              pflags[peer_id] = false;
+            }
+            omp_unset_lock(plocks[peer_id]);
+          }
+          i = i<<1;
         }
 
       }
@@ -2008,7 +2025,7 @@ bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount,
     }
 
     omp_set_lock(&lock_global);
-      cout<<"[Rtree log:]  thread("<< tid <<") cur_foundCount("<<cur_foundCount<<")"<<endl;
+      //cout<<"[Rtree log:]  thread("<< tid <<") cur_foundCount("<<cur_foundCount<<")"<<endl;
       a_foundCount += cur_foundCount;
     omp_unset_lock(&lock_global);
     delete cur_rect;

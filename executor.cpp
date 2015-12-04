@@ -37,8 +37,11 @@ bool LessCallback(ValueType id, void* arg)
 {
     CompareInfo* compare_info = (struct CompareInfo *)arg;
     TableData& tb_data = *(table_map[compare_info->table_name]);
+    cout << "Hit data rect [" << id << "] in" << compare_info->table_name << ":";
     // Check less than
     if (compare_info->attr_value > tb_data.attribute_in_row_[id]) {
+        cout<< " " << tb_data.rect_in_row_[id].min[0] << " " << tb_data.rect_in_row_[id].min[1] << " "
+        << tb_data.rect_in_row_[id].max[0] << " "<< tb_data.rect_in_row_[id].max[1] <<endl;
         return true;
     }
 
