@@ -1836,7 +1836,8 @@ bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount,
   //cout<<"[Rtree log:] P2PSearchContain!"<<endl;
 
   vector<omp_lock_t*> plocks(128);
-  vector<bool> pflags(128);
+  //vector<bool> pflags(128);
+  bool pflags[128];
   vector<vector<Node*>*> pstacks(128);
   int live_worker = 0;
   omp_lock_t lock_global;
@@ -1881,10 +1882,10 @@ bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount,
     }
     #pragma omp barrier
 
-    omp_set_lock(&lock_print);
-    cout << "thread " << tid << " is initiated with pflag = " << pflags[tid] << " and local stack size = " 
-         << pstacks[tid]->size() << endl;
-    omp_unset_lock(&lock_print);
+   // omp_set_lock(&lock_print);
+   // cout << "thread " << tid << " is initiated with pflag = " << pflags[tid] << " and local stack size = " 
+   //      << pstacks[tid]->size() << endl;
+   // omp_unset_lock(&lock_print);
     
     int exit_counter = 0;
     int split_counter = 0;
