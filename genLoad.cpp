@@ -9,7 +9,7 @@ using namespace std;
 typedef pair<double, double> Point;
 typedef vector<Point> Polygon;
 
-int n_rect = 100;
+int n_rect = 10000000;
 double area_side = 100000.0;
 double rec_side_mean = 30.0;
 double rec_side_sigma = 5.0;
