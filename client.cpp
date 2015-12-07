@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 
   result_file_name = query_file_name;
   int index = result_file_name.find('.');
-  result_file_name.insert(index, "_result_serial");
+  result_file_name.insert(index, "_result_parallel_P2P");
   fprintf(stderr, "result file name = %s\n", result_file_name.c_str());
   std::ifstream input_file(query_file_name);
   std::ofstream output_file(result_file_name);
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
       //fprintf(stderr, "query = %s\n", query);
       if (client_sendquery(query)) {
         if (client_recvresponse(response) == 1) {
-          fprintf(stderr, "query found: response = %s\n", response);
+          //fprintf(stderr, "query found: response = %s\n", response);
           output_file << response << '\n';
         } else {
           fprintf(stderr, "query not found.\n");
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
       counter++;
       if (counter == 10 || cnt_top_10 < 10) {
         gettimeofday(&endTime, NULL);
-        fprintf(stderr, "[client log:] time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);
+       // fprintf(stderr, "[client log:] time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);
         counter = 0;
       }
     }
