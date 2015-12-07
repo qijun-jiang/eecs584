@@ -1749,7 +1749,7 @@ bool RTREE_QUAL::ParallelSearchContain(Node* a_node, Rect* a_rect, int& a_foundC
           }
         }
       }
-      cout<<"[Rtree log:] global_queue size:("<< global_queue.size() <<")"<<endl;
+      //cout<<"[Rtree log:] global_queue size:("<< global_queue.size() <<")"<<endl;
     }
     #pragma omp barrier
     
