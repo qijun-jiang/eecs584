@@ -155,13 +155,15 @@ int main(int argc, char *argv[])
 
   client_sockinit(server_name, port); 
 
+  std::ifstream input_file(query_file_name);
+
   result_file_name = "sql/result_c";
+  query_file_name.erase(0, 4);
   result_file_name.append(core);
   result_file_name += "_";
   result_file_name.append(query_file_name);
  // result_file_name.replace(result_file_name.size() - 3, 3, "result_parallel_P2P");
   fprintf(stderr, "result file name = %s\n", result_file_name.c_str());
-  std::ifstream input_file(query_file_name);
   std::ofstream output_file(result_file_name);
   if (input_file.is_open()) {
 
