@@ -31,7 +31,7 @@ void client_usage(char *progname)
  * "*imagename" : the name of the image to search for
  * "*vers"      : the version used for query packet
  */
-int client_args(int argc, char *argv[], char **sname, u_short *port, char *fname)
+int client_args(int argc, char *argv[], char *core, char **sname, u_short *port, char *fname)
 {
   char c, *p;
   extern char *optarg;
@@ -40,8 +40,11 @@ int client_args(int argc, char *argv[], char **sname, u_short *port, char *fname
     return (1);
   }
   
-  while ((c = getopt(argc, argv, "s:q:")) != EOF) {
+  while ((c = getopt(argc, argv, "c:s:q:")) != EOF) {
     switch (c) {
+    case 'c':
+      memcpy(core, optarg, strlen(optarg));
+      break;
     case 's':
       for (p = optarg+strlen(optarg)-1;      // point to last character of addr:port arg
            p != optarg && *p != CLIENT_PORTSEP;  // search for ':' separating addr from port
@@ -143,16 +146,17 @@ int main(int argc, char *argv[])
   char response[RESPONSE_MAXLENGTH] = { 0 };
   int counter = 0;
   int cnt_top_10 = 0;
+  char core[5] = "1";
 
   /* parse args */
-  if (client_args(argc, argv, &server_name, &port, query_file_name)) {
+  if (client_args(argc, argv, core, &server_name, &port, query_file_name)) {
     client_usage(argv[0]);
   }
 
   client_sockinit(server_name, port); 
 
-  result_file_name = query_file_name;
-  result_file_name.replace(result_file_name.size() - 3, 3, "result_parallel_P2P");
+  result_file_name = "result_c" + core + "_" + query_file_name;
+ // result_file_name.replace(result_file_name.size() - 3, 3, "result_parallel_P2P");
   fprintf(stderr, "result file name = %s\n", result_file_name.c_str());
   std::ifstream input_file(query_file_name);
   std::ofstream output_file(result_file_name);
