@@ -152,8 +152,7 @@ int main(int argc, char *argv[])
   client_sockinit(server_name, port); 
 
   result_file_name = query_file_name;
-  int index = result_file_name.find('.');
-  result_file_name.insert(index, "_result_parallel_P2P");
+  result_file_name.replace(result.size() - 3, 3, "result_parallel_P2P")
   fprintf(stderr, "result file name = %s\n", result_file_name.c_str());
   std::ifstream input_file(query_file_name);
   std::ofstream output_file(result_file_name);
@@ -191,7 +190,7 @@ int main(int argc, char *argv[])
 
     /* set the end time */
     gettimeofday(&endTime, NULL);
-    fprintf(stderr, "[client log:] end time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);
+    output_file << "[client log:] end time = " << ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0) << " s\n";
     
     /* send the termination to server to close the connection */
     client_sendtermination();
