@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 			fs << poly[j].first << " " << poly[j].second << ", ";
 		}
 		fs << poly[0].first << " " << poly[0].second << " ))'), g) AND ";
-		fs << "val = '" << s << "';";
+		fs << "val < '" << s << "';";
 		if (i != n_search-1) fs << "\n";
 	}
 	return 0;
