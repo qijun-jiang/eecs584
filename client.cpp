@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 
   client_sockinit(server_name, port); 
 
-  result_file_name = "result_c";
+  result_file_name = "sql/result_c";
   result_file_name.append(core);
   result_file_name += "_";
   result_file_name.append(query_file_name);
