@@ -14,7 +14,7 @@ unsigned seed = chrono::system_clock::now().time_since_epoch().count();
 default_random_engine gen(seed);
 uniform_real_distribution<double> unif_size(0.0, area_side);
 
-Polygon randSearchBox(int p) {
+Polygon randSearchBox(double p) {
 	Polygon poly;
 	double l = sqrt(p/100.0) * area_side;
 	double x = unif_size(gen);
@@ -28,8 +28,8 @@ Polygon randSearchBox(int p) {
 
 int main(int argc, char** argv) {
 	int n_search = stoi(argv[1]);
-	int p = stoi(argv[2]);
-	int s = stoi(argv[3]);
+	double p = stod(argv[2]);
+	double s = stod(argv[3]);
 	string filename = "sql/search_N10M_Q" + to_string(n_search) + "_p" + to_string(p) + "_s" + to_string(s) + ".sql";
 	ofstream fs(filename);
 	for (int i = 0; i < n_search; i++) {
