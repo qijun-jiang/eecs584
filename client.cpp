@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 
   std::ifstream input_file(query_file_name);
 
-  result_file_name = "sql/result_c";
+  result_file_name = "result/result_c";
   result_file_name.append(core);
   result_file_name += "_";
   result_file_name.append(mode);
