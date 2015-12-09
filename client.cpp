@@ -19,7 +19,7 @@ int sd;                   /* socket descriptor */
 
 void client_usage(char *progname)
 {
-  fprintf(stderr, "Usage: %s -s <server>:<port> -q <query_file>\n",
+  fprintf(stderr, "Usage: %s -s <server>:<port> -q <query_file> -c <core number> -m <parallel mode>\n",
           progname); 
   exit(1);
 }
@@ -31,7 +31,7 @@ void client_usage(char *progname)
  * "*imagename" : the name of the image to search for
  * "*vers"      : the version used for query packet
  */
-int client_args(int argc, char *argv[], char *core, char **sname, u_short *port, char *fname)
+int client_args(int argc, char *argv[], char *core, char **sname, u_short *port, char *fname, char *mode)
 {
   char c, *p;
   extern char *optarg;
@@ -40,7 +40,7 @@ int client_args(int argc, char *argv[], char *core, char **sname, u_short *port,
     return (1);
   }
   
-  while ((c = getopt(argc, argv, "c:s:q:")) != EOF) {
+  while ((c = getopt(argc, argv, "c:s:q:m:")) != EOF) {
     switch (c) {
     case 'c':
       memcpy(core, optarg, strlen(optarg));
@@ -56,6 +56,9 @@ int client_args(int argc, char *argv[], char *core, char **sname, u_short *port,
       break;
     case 'q':
       memcpy(fname, optarg, strlen(optarg));
+      break;
+    case 'q':
+      memcpy(mode, optarg, strlen(optarg));
       break;
     default:
       return(1);
@@ -147,9 +150,10 @@ int main(int argc, char *argv[])
   int counter = 0;
   int cnt_top_10 = 0;
   char core[5] = "1";
+  char mode[10] = {0};
 
   /* parse args */
-  if (client_args(argc, argv, core, &server_name, &port, query_file_name)) {
+  if (client_args(argc, argv, core, &server_name, &port, query_file_name, mode)) {
     client_usage(argv[0]);
   }
 
@@ -159,7 +163,9 @@ int main(int argc, char *argv[])
 
   result_file_name = "sql/result_c";
   result_file_name.append(core);
-  result_file_name += "_MW_";
+  result_file_name += "_";
+  result_file_name.append(mode);
+  result_file_name += "_";
   result_file_name.append(&query_file_name[4]);
  // result_file_name.replace(result_file_name.size() - 3, 3, "result_parallel_P2P");
   fprintf(stderr, "result file name = %s\n", result_file_name.c_str());
