@@ -1965,6 +1965,7 @@ bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount,
           omp_unset_lock(&lock_global);
 
           i=1;
+          num_split = 1;
           for (int peer_id:idle_peers){
             omp_set_lock(plocks[peer_id]);
             if (pflags[peer_id] && pstacks[peer_id]->empty()){
