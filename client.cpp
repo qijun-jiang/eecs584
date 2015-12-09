@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
   result_file_name.append(mode);
   result_file_name += "_";
   result_file_name.append(&query_file_name[4]);
-  result_file_name.replace(result_file_name.size()-3, 3, txt);
+  result_file_name.replace(result_file_name.size()-3, 3, "txt");
  // result_file_name.replace(result_file_name.size() - 3, 3, "result_parallel_P2P");
   fprintf(stderr, "result file name = %s\n", result_file_name.c_str());
   std::ofstream output_file(result_file_name);
