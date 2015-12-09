@@ -57,7 +57,7 @@ int client_args(int argc, char *argv[], char *core, char **sname, u_short *port,
     case 'q':
       memcpy(fname, optarg, strlen(optarg));
       break;
-    case 'q':
+    case 'm':
       memcpy(mode, optarg, strlen(optarg));
       break;
     default:
