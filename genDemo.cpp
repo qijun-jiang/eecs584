@@ -33,7 +33,7 @@ Polygon randPolygon() {
 }
 
 int main(int argc, char** argv) {
-	string filename = "sql/load_N10M.sql";
+	string filename = "sql/load_N500k.sql";
 	ofstream fs(filename);
 	fs << "DROP TABLE gis;\n";
 	fs << "CREATE TABLE gis (g GEOMETRY NOT NULL, val DOUBLE, SPATIAL INDEX(g)) ENGINE=MyISAM;\n";
