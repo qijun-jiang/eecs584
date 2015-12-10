@@ -9,8 +9,11 @@
 Example: ./server -l sql/load_test_int.sql
 
 - change parallel exucution mode in RTree.h,  comment the one not needed:
+
   //SearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+
   //ParallelSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+
   P2PSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
 
 
@@ -26,7 +29,9 @@ Example: ./client -s beyster111.engin.umich.edu:17284 -q sql/search_test_int.sql
 - sql/load_N10M.sql will be generated with 10M insert operation in it.
 
 - generate search data for client compile command: g++ genSearch -o gensearch -std=c++11
+
 - generate search data for client execute command: ./gensearch [number of query] [percentage of search area] [percetage of selectivity]
+
 Example: ./gensearch 1000 5 30
 
 
