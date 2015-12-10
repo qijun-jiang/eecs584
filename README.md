@@ -6,6 +6,11 @@
 
 - server execute command: ./server -l load_file
 
+- change parallel exucution mode in RTree.h,  comment the one not needed:
+  //SearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+  //ParallelSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+  P2PSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+
 Example: ./server -l sql/load_test_int.sql
 
 - client compile commnad: g++ client.cpp -o client -std=c++11
@@ -31,7 +36,6 @@ ALTER TABLE gis ADD SPATIAL INDEX(g);
 
 # project design:
 
--client:
 
 -server:
 
@@ -48,17 +52,8 @@ parse the 5 queries(drop table, create table, insert, delete, select)
 
 return a struct
 
-query type
-
-table name
-
-rectangle
-
-spatial function(intersect/ contain)
-
-attribute(as double)
-
-compare operator
+{query type, table name, rectangle, spatial function(intersect/ contain),
+  attribute(as double), compare operator}
 
 -executor:
 
@@ -86,7 +81,7 @@ execution mode: 1.parallel check 2nd attribute in the tree search process. 2.sto
                  
 
 #Rtree implementation
--serial implementation: https://github.com/nushoin/RTree
+-serial legacy implementation: https://github.com/nushoin/RTree
 
--execution mode: 1.parallel check 2nd attribute in the tree search process.
+-execution plan: 1.parallel check 2nd attribute in the tree search process.
                  2.store all row id into a data structure and sort afterwards, parallelize scan process again. 
