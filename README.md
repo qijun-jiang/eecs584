@@ -6,12 +6,14 @@
 
 - server execute command: ./server -l load_file
 
+Example: ./server -l sql/load_test_int.sql
+
 - change parallel exucution mode in RTree.h,  comment the one not needed:
   //SearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
   //ParallelSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
   P2PSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
 
-Example: ./server -l sql/load_test_int.sql
+
 
 - client compile commnad: g++ client.cpp -o client -std=c++11
 
