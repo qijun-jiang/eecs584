@@ -21,6 +21,15 @@ Example: ./server -l sql/load_test_int.sql
 
 Example: ./client -s beyster111.engin.umich.edu:17284 -q sql/search_test_int.sql
 
+- generate load data for server compile command: g++ genLoad.cpp -o genload  -std=c++11 
+- generate load data for server execute command: ./genload
+- sql/load_N10M.sql will be generated with 10M insert operation in it.
+
+- generate search data for client compile command: g++ genSearch -o gensearch -std=c++11
+- generate search data for client execute command: ./gensearch [number of query] [percentage of search area] [percetage of selectivity]
+Example: ./gensearch 1000 5 30
+
+
 #Mysql source code load
 output: load.sql, search.sql
 
