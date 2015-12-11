@@ -54,6 +54,8 @@
 	"
    * [!--Attention--!] Please do not forget to comment the other two algorithms!
 
+8. Please do not delete sql/ and result/ folder even though it is empty
+
 －－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
 
 － Major Function
