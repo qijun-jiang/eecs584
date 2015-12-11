@@ -1,9 +1,9 @@
-===EECS 584 Final Project: Parallel Execution of Spatial Queries on Shared Memory Machine===
+======EECS 584 Final Project: Parallel Execution of Spatial Queries on Shared Memory Machine======
 - Group Member:
   Qijun Jiang, Yicong Zhang, Zhizhong Zhang
 - Instructor:
   Barzan Mozafari
-============================================================================================
+==================================================================================================
 
 - Project build procedure:
 
