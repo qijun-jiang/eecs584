@@ -1,5 +1,15 @@
 # eecs584
 
+# PROJECT ABSTRACT: to be filled!
+
+# Project test procedure:
+- 1. Generate loading data for server, and query data for client.
+- 2. Modify code in RTree.h to choose parallelization mode.   
+- 3. Run server with loading data.
+- 4. run client with query data.
+- 5. Observe run time
+
+
 #compile and execution
 
 - server compile command: g++ server.cpp executor.cpp parser.cpp -o server -fopenmp -std=c++11
