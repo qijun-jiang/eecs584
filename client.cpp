@@ -178,12 +178,6 @@ int main(int argc, char *argv[])
       else {
         fprintf(stderr, "error in sending query.\n");
       }
-      cnt_top_10++;
-      counter++;
-      if (counter == 10 || cnt_top_10 < 10) {
-        gettimeofday(&endTime, NULL);
-        counter = 0;
-      }
     }
 
     /* set the end time */
