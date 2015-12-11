@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
   char response[RESPONSE_MAXLENGTH] = { 0 };
 
   /* parse args */
-  if (client_args(argc, argv, core, &server_name, &port, query_file_name, mode)) {
+  if (client_args(argc, argv, &server_name, &port, query_file_name)) {
     client_usage(argv[0]);
   }
 
