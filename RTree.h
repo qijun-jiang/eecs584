@@ -364,7 +364,7 @@ protected:
   void ReInsert(Node* a_node, ListNode** a_listNode);
   bool SearchOverlap(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size);
   bool SearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size);
-  bool ParallelSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size);
+  bool MasterWorkerSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size);
   bool P2PSearchContain(Node* cur_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size);
   void RemoveAllRec(Node* a_node);
   void Reset();
@@ -579,9 +579,18 @@ int RTREE_QUAL::SearchContain(const ELEMTYPE a_min[NUMDIMS], const ELEMTYPE a_ma
   // NOTE: May want to return search result another way, perhaps returning the number of found elements here.
 
   int foundCount = 0;
-  //SearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
-  //ParallelSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
-  P2PSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+
+  /*--------------------------------------Change Search Mode-------------------------------------*/ 
+  //Serial Algorithm 
+  //SearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);  
+
+  //Master-Worker Parallel Algorithm
+  MasterWorkerSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+  
+  //Peer-to-Peer Parallel Algorithm
+  //P2PSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+  /*---------------------------------------------------------------------------------------------*/
+
   return foundCount;
 }
 
@@ -1697,7 +1706,7 @@ bool RTREE_QUAL::SearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_
 
 // Search in an index tree or subtree for all data retangles that overlap the argument rectangle.
 RTREE_TEMPLATE
-bool RTREE_QUAL::ParallelSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size)
+bool RTREE_QUAL::MasterWorkerSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount, t_resultCallback a_resultCallback, void* a_context, int a_context_size)
 {
   ASSERT(a_node);
   ASSERT(a_node->m_level >= 0);
@@ -1749,7 +1758,6 @@ bool RTREE_QUAL::ParallelSearchContain(Node* a_node, Rect* a_rect, int& a_foundC
           }
         }
       }
-      //cout<<"[Rtree log:] global_queue size:("<< global_queue.size() <<")"<<endl;
     }
     #pragma omp barrier
     
@@ -1833,10 +1841,8 @@ bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount,
   ASSERT(a_node);
   ASSERT(a_node->m_level >= 0);
   ASSERT(a_rect);
-  //cout<<"[Rtree log:] P2PSearchContain!"<<endl;
 
   vector<omp_lock_t*> plocks(128);
-  //vector<bool> pflags(128);
   bool pflags[128];
   vector<vector<Node*>*> pstacks(128);
   int live_worker = 0;
@@ -1891,16 +1897,9 @@ bool RTREE_QUAL::P2PSearchContain(Node* a_node, Rect* a_rect, int& a_foundCount,
     int split_counter = 0;
     //DFS using stack
     while (1) {
-    //cout<<"[Rtree log:]  thread("<< tid <<") local_stack("<<local_stack.size()<<") pflags[tid]("<<pflags[tid]<<") live_worker="<<live_worker<<endl;
-
+    
       // Check flag
       if (pflags[tid] == true){
-        // Exit loop when all threads are idle 
-        //cout<<"[Rtree log:]  thread("<< tid <<") exit_counter="<<exit_counter<<endl;
-        // omp_set_lock(&lock_global);
-        //     cout<<"[Rtree log:]  thread("<< tid <<") local_stack("<<local_stack.size()<<") pflags[tid]("<<pflags[tid]<<") live_worker="<<live_worker<<endl;
-        //     for (int i=0; i<nthreads ; i++) cout<< pstacks[i]->size() <<"-flag("<<pflags[i]<<") "; cout<<endl;
-        // omp_unset_lock(&lock_global);
         exit_counter++;
         if (exit_counter == 200){
           exit_counter = 0;

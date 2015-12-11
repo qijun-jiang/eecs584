@@ -1,0 +1,23 @@
+===EECS 584 Final Project: Parallel Execution of Spatial Queries on Shared Memory Machine===
+- Group Member:
+  Qijun Jiang, Yicong Zhang, Zhizhong Zhang
+- Instructor:
+  Barzan Mozafari
+============================================================================================
+
+- Project build procedure:
+
+1. Compile client executable
+   g++ client.cpp -o client -std=c++11
+
+2. Compile server executable
+   g++ server.cpp executor.cpp parser.cpp -o server -fopenmp -std=c++11
+
+3. Compile load(INSERT) queries generator
+   g++ genLoad.cpp -o genLoad -std=c++11
+
+4. Compile SELECT queries generator
+   g++ genSearch.cpp -o genSearch -std=c++11
+
+After that, you will get 4 executable files
+client, server, genLoad, genSearch

@@ -24,11 +24,8 @@ void server_usage(char *progname)
 }
 
 /*
- * client_args: parses command line args.
- * "*sname"     : the server's name
- * "port"       : the port to connect at server, in network byte order. 
- * "*imagename" : the name of the image to search for
- * "*vers"      : the version used for query packet
+ * server_args: parses command line args.
+ * "*fname"     : the file name for loading data
  */
 int server_args(int argc, char *argv[], char *fname)
 {
@@ -154,7 +151,7 @@ void load_data(char* file_name, Executor &query_executor) {
   std::string   query;
   long int counter = 0;
 
-  fprintf(stderr, "load data\n");
+  fprintf(stderr, "[server log:] start loading data\n");
   struct timeval startTime;
   struct timeval endTime;
   gettimeofday(&startTime, NULL);
@@ -165,14 +162,12 @@ void load_data(char* file_name, Executor &query_executor) {
 
     if (counter == 200000) {
       gettimeofday(&endTime, NULL);
-      fprintf(stderr, "[server log:] time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);
+      fprintf(stderr, "[server log:] 200K data loaded, time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);
       counter = 0;
     }
-    //fprintf(stderr, "query = %s\n", query.c_str());
-    //fprintf(stderr, "result = %d\n", query_executor.execute(query));
   }
   gettimeofday(&endTime, NULL);
-  fprintf(stderr, "[server log:] time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);      
+  fprintf(stderr, "[server log:] All data loaded, time = %f s\n", ((endTime.tv_sec - startTime.tv_sec)*1000000L+endTime.tv_usec - startTime.tv_usec)/1000000.0);      
   return;
 }
 
@@ -215,7 +210,6 @@ int main(int argc, char *argv[])
       // process the query 
       string qry(query);
       int ans = query_executor.execute(qry);
-     // fprintf(stderr, "result = %d\n", query_executor.execute(qry));
 
       // send response to the client
       server_sendresponse(td, to_string(ans).c_str());

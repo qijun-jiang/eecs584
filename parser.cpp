@@ -26,7 +26,6 @@ double get_double(string table_name, string attr_name) {
     }
 }
 
-
 void print_parser_result(ParserResult result) {
     cout << "query type: " << result.query_type << endl;
     cout << "table name: " << result.table_name << endl;

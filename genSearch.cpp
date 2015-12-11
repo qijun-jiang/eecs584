@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
 	string file_qs;
 	str << "_p" << fixed << setprecision(1) << p << "_s" << s << ".sql";
 	str >> file_qs;
-	string filename = "sql/search_N10M_Q" + to_string(n_search) + file_qs;
+	string filename = "sql/search_N500K_Q" + to_string(n_search) + file_qs;
 	ofstream fs(filename);
 	for (int i = 0; i < n_search; i++) {
 		Polygon poly = randSearchBox(p);

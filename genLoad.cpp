@@ -9,7 +9,7 @@ using namespace std;
 typedef pair<double, double> Point;
 typedef vector<Point> Polygon;
 
-int n_rect = 10000000;
+int n_rect = 500000;
 double area_side = 100000.0;
 double rec_side_mean = 30.0;
 double rec_side_sigma = 5.0;
@@ -33,7 +33,7 @@ Polygon randPolygon() {
 }
 
 int main(int argc, char** argv) {
-	string filename = "sql/load_N10M.sql";
+	string filename = "sql/load_N500K.sql";
 	ofstream fs(filename);
 	fs << "DROP TABLE gis;\n";
 	fs << "CREATE TABLE gis (g GEOMETRY NOT NULL, val DOUBLE, SPATIAL INDEX(g)) ENGINE=MyISAM;\n";
