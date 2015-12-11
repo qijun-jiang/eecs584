@@ -12,27 +12,8 @@
 
 #compile and execution
 
-- server compile command: g++ server.cpp executor.cpp parser.cpp -o server -fopenmp -std=c++11
 
-- server execute command: ./server -l load_file
-
-Example: ./server -l sql/load_test_int.sql
-
-- change parallel exucution mode in RTree.h,  comment the one not needed:
-
-  //SearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
-
-  //ParallelSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
-
-  P2PSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
-
-
-
-- client compile commnad: g++ client.cpp -o client -std=c++11
-
-- client execute command: ./client -s hostname:portname -q search_file
-
-Example: ./client -s beyster111.engin.umich.edu:17284 -q sql/search_test_int.sql
+Step 1:
 
 - generate load data for server compile command: g++ genLoad.cpp -o genload  -std=c++11 
 - generate load data for server execute command: ./genload
@@ -43,6 +24,35 @@ Example: ./client -s beyster111.engin.umich.edu:17284 -q sql/search_test_int.sql
 - generate search data for client execute command: ./gensearch [number of query] [percentage of search area] [percetage of selectivity]
 
 Example: ./gensearch 1000 5 30
+
+Step 2:
+
+- change parallel exucution mode in RTree.h,  comment the one not needed:
+
+  //SearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+
+  //ParallelSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+
+  P2PSearchContain(m_root, &rect, foundCount, a_resultCallback, a_context, a_context_size);
+
+  
+Step 3:
+
+- server compile command: g++ server.cpp executor.cpp parser.cpp -o server -fopenmp -std=c++11
+
+- server execute command: ./server -l load_file
+
+Example: ./server -l sql/load_test_int.sql
+
+
+Step 4:
+
+- client compile commnad: g++ client.cpp -o client -std=c++11
+
+- client execute command: ./client -s hostname:portname -q search_file
+
+Example: ./client -s beyster111.engin.umich.edu:17284 -q sql/search_test_int.sql
+
 
 
 #Mysql source code load
